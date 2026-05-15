@@ -15,10 +15,20 @@ async function loadGifFrames(src) {
     return gifFrameCache[src];
   }
 
-  const res = await fetch(src);
-
-  const buffer =
-    await res.arrayBuffer();
+  let buffer;
+  if (src.startsWith('data:')) {
+    // Handle base64 data URL without fetch
+    const base64 = src.split(',')[1];
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    buffer = bytes.buffer;
+  } else {
+    const res = await fetch(src);
+    buffer = await res.arrayBuffer();
+  }
 
   const gif =
     parseGIF(buffer);
