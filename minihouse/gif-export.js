@@ -49,7 +49,34 @@ async function loadGifFrames(src) {
 
   const finalFrames = [];
 
-  rawFrames.forEach(frame => {
+  rawFrames.forEach((frame, i) => {
+
+    // ===== ADDED: dispose the PREVIOUS frame's region if it asked us to =====
+    // In the GIF spec, disposalType is declared on a frame and applies
+    // AFTER that frame has been shown. So before drawing the current
+    // patch, we check what the previous frame's disposalType wanted.
+    //   type 0 / 1 = leave canvas as-is (original behavior, do nothing)
+    //   type 2     = restore that region to background = clearRect it
+    //   type 3     = restore-to-previous; rare, deliberately skipped
+    //                because handling it caused regressions on this
+    //                asset set. Falls through to no-op (same as type 1).
+    if (i > 0) {
+
+      const prev = rawFrames[i - 1];
+
+      if (prev.disposalType === 2) {
+
+        masterCtx.clearRect(
+          prev.dims.left,
+          prev.dims.top,
+          prev.dims.width,
+          prev.dims.height
+        );
+
+      }
+
+    }
+    // ===== END ADDED =====
 
     // patch canvas
     const patchCanvas =
@@ -108,19 +135,21 @@ async function loadGifFrames(src) {
 
   });
 
-  // ensure minimum 8 frames
-  while (finalFrames.length < 8) {
+  // loop from start to fill up to 9 frames
+  const actualCount = finalFrames.length;
+
+  while (finalFrames.length < 9) {
 
     finalFrames.push(
       finalFrames[
-        finalFrames.length - 1
+        finalFrames.length % actualCount
       ]
     );
 
   }
 
   gifFrameCache[src] =
-    finalFrames.slice(0, 8);
+    finalFrames.slice(0, 9);
 
   return gifFrameCache[src];
 
@@ -201,20 +230,13 @@ async function exportSceneGif() {
     );
 
   const gif = new GIF({
-  workers: 2,
-
-  quality: 1,
-
-  repeat: 0,
-
-  width: CW,
-  height: CH,
-
-  workerScript: 'gif.worker.js',
-
-
-
-  transparent: null
+    workers: 2,
+    quality: 1,
+    repeat: 0,
+    width: CW,
+    height: CH,
+    workerScript: 'gif.worker.js',
+    transparent: null
   });
 
   const sorted =
@@ -244,26 +266,22 @@ async function exportSceneGif() {
       const img =
         await loadStaticImage(item.src);
 
-      assetMap[item.src] = [
-        img,
-        img,
-        img,
-        img,
-        img
-      ];
+      assetMap[item.src] = img;
 
     }
 
   }
 
-  // compose 8 frames
+  // compose 9 frames
   for (
     let frameIndex = 0;
-    frameIndex < 8;
+    frameIndex < 9;
     frameIndex++
   ) {
 
-    ctx.clearRect(0, 0, CW, CH);
+    // fill opaque white so no transparency exists
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, CW, CH);
 
     // draw default floor bottom layer
     ctx.drawImage(
@@ -276,11 +294,13 @@ async function exportSceneGif() {
 
     for (const item of sorted) {
 
-      const frames =
+      const asset =
         assetMap[item.src];
 
-      const img =
-        frames[frameIndex];
+      // static image or gif frames array
+      const img = Array.isArray(asset)
+        ? asset[frameIndex % asset.length]
+        : asset;
 
       if (!img) continue;
 
@@ -314,9 +334,16 @@ async function exportSceneGif() {
 
     }
 
-    gif.addFrame(renderCanvas, {
+    // *** KEY FIX: pass the context (ctx), NOT the canvas element.
+    // When you pass a canvas element, gif.js uses getImageData()
+    // which draws onto a SHARED internal canvas that doesn't get
+    // cleared between frames — causing frame stacking.
+    // When you pass the context, gif.js uses getContextData()
+    // which just calls ctx.getImageData() directly — clean copy,
+    // no shared state, no stacking. ***
+    gif.addFrame(ctx, {
       copy: true,
-      delay: 190
+      delay: 200
     });
 
   }
