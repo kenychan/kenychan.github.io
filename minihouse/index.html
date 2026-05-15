@@ -230,8 +230,6 @@
 .shop-item-card .thumb-wrap img {
   max-width: 84px;
   max-height: 84px;
-    object-fit: contain;
-
 }
 
 /* change bar buttons */
@@ -290,21 +288,13 @@
 
 /* Language toggle */
 #langToggle {
-  
   font-size: 11px;
   cursor: pointer;
   color: #996633;
-  background: #ffe0a0;
+  background: #ffe0c0;
   border: 1px solid #cca080;
-  vertical-align: middle;
-
   padding: 1px 8px;
   margin-left: 10px;
-    margin-right: 3px;
-
-}
-#langToggle:hover {
-  background: #ffd0a8;
 }
 
 .upload-plan-btn {
@@ -327,29 +317,6 @@
 }
 .upload-plan-btn:hover {
   background: #ffd0a8;
-}
-
-.upload-item-btn {
-margin-left: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #ffe0c0;
-  border: 1px solid #cca080;
-  border-radius: 6px;
-  color: #996633;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 1px 10px;
-  box-sizing: border-box;
-  vertical-align: middle;
-  font-family: inherit;
-  font-size: 10px;
-  line-height: 1;
-  height: 20px;
-}
-.upload-item-btn:hover {
-  background: #d0d0d0;
 }
 </style>
 </head>
@@ -394,12 +361,10 @@ margin-left: 8px;
             <!-- ═══ Game bar: upload + language ═══ -->
             <table width="616" border="0" cellspacing="0" cellpadding="0" class="gamebar">
               <tr>
-<td height="27" align="left" style="padding-left:8px; display:flex; align-items:center;">
+                <td height="27" align="left" style="padding-left:8px;">
                   <input type="file" id="uploadJsonInput" accept=".json" style="display:none;" onchange="handleUploadJson(this)">
-                  <input type="file" id="uploadItemInput" accept=".gif,.png,.jpg,.jpeg,.webp,.bmp" style="display:none;" onchange="handleUploadItem(this)">
                   <button class="upload-plan-btn" onclick="document.getElementById('uploadJsonInput').click()" data-i18n="upload_plan">上传设计方案</button>
-                  <button class="upload-item-btn" onclick="document.getElementById('uploadItemInput').click()" data-i18n="upload_item">上传物品</button>
-<button id="langToggle" onclick="toggleLang()" style="margin-left:auto;">CN / EN</button>
+                  <button id="langToggle" onclick="toggleLang()">CN / EN</button>
                 </td>
               </tr>
             </table>
@@ -616,7 +581,7 @@ let lang = 'cn';
 let dragMoved = false;
 const I18N = {
   cn: {
-    design_plan:'设计方案', upload_plan:'上传设计方案', upload_item:'上传物品', new:'新建', delete:'删除', rename:'重命名', reset:'原始状态',
+    design_plan:'设计方案', upload_plan:'上传设计方案', new:'新建', delete:'删除', rename:'重命名', reset:'原始状态',
     set_default:'设为默认方案', items_label:'装扮中的物品', tips_title:'操作提示',
     tip1:'• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间',
     tip2:'• 左键点击物品拾起，再次点击放下；手机触摸即可拖拽',
@@ -638,7 +603,7 @@ const I18N = {
     no_items:'没有找到物品', all:'全部',
   },
   en: {
-    design_plan:'Design Plan', upload_plan:'Upload Design Plan', upload_item:'Upload Item', new:'New', delete:'Delete', rename:'Rename', reset:'Reset',
+    design_plan:'Design Plan', upload_plan:'Upload Design Plan', new:'New', delete:'Delete', rename:'Rename', reset:'Reset',
     set_default:'Set Default', items_label:'Items in Room', tips_title:'Tips',
     tip1:'• Click item images or "Add" button in the shop to add to room',
     tip2:'• Left-click to pick up item, click again to place; on phone: touch to drag',
@@ -1049,7 +1014,7 @@ function renderShop() {
                   <table width="84" border="0" cellspacing="0" cellpadding="0" class="T05">
                     <tr><td>
                       <a style="cursor:pointer;" onclick="addItemToRoom(allItems.find(i=>i.id==='${item.id}'))">
-                        <img src="${getThumbSrc(item)}" style="object-fit:contain;" width="84" height="84" border="0">
+                        <img src="${getThumbSrc(item)}" width="84" height="84" border="0" style="object-fit:contain;">
                       </a>
                     </td></tr>
                   </table>
@@ -1158,6 +1123,12 @@ function renderCanvas() {
     div.style.zIndex = ri.z;
     div.dataset.uid = ri.uid;
 
+    // When locked from item list, disable pointer events on other items
+    // so the selected item underneath can receive clicks/drags
+    if (listLocked && focusUid !== null && ri.uid !== focusUid) {
+      div.style.pointerEvents = 'none';
+    }
+
     const img = document.createElement('img');
     img.src = ri.src;
     img.width = ri.w;
@@ -1185,6 +1156,11 @@ function onItemMouseDown(e) {
     roomItems.find(r => r.uid === uid);
 
   if (!ri) return;
+
+  // If focus is locked from item list and this is a different item, ignore
+  if (listLocked && focusUid !== null && uid !== focusUid) {
+    return;
+  }
 
   e.preventDefault();
   e.stopPropagation();
@@ -1313,6 +1289,7 @@ document.addEventListener('pointerup', () => {
     if (dragState.wasSelected) {
 
       focusUid = null;
+      listLocked = false;
 
     } else {
 
@@ -1343,6 +1320,7 @@ document
     ) {
 
       focusUid = null;
+      listLocked = false;
 
       document
         .querySelectorAll('.room-item-div')
@@ -1485,8 +1463,11 @@ function renderItemList() {
   document.getElementById('bChkAll').checked = false;
 }
 
+let listLocked = false; // when selected from item list, lock focus
+
 function focusItem(uid) {
   focusUid = uid;
+  listLocked = true;
   renderCanvas();
   renderItemList();
 }
@@ -1587,12 +1568,6 @@ function handleUploadJson(input) {
       roomItems = data.items.map(it => ({ ...it }));
       nextUid = Math.max(1, ...roomItems.map(r => r.uid)) + 1;
       nextZ = Math.max(1, ...roomItems.map(r => r.z)) + 1;
-      // Count existing user items to continue numbering
-      userItemCount = 0;
-      roomItems.forEach(ri => {
-        const m = ri.name.match(/^User Item (\d+)$/);
-        if (m) userItemCount = Math.max(userItemCount, parseInt(m[1]));
-      });
       focusUid = null;
       currentSaveName = file.name.replace(/\.json$/i, '');
       renderCanvas();
@@ -1602,47 +1577,7 @@ function handleUploadJson(input) {
     }
   };
   reader.readAsText(file);
-  input.value = '';
-}
-
-// ── Upload custom item (GIF/PNG/JPG) as base64 ──
-let userItemCount = 0;
-
-function handleUploadItem(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const dataUrl = e.target.result; // base64 data URL
-    const img = new Image();
-    img.onload = () => {
-      let w = img.naturalWidth, h = img.naturalHeight;
-      // Clamp if oversized
-      if (w > CW * 0.7) { const s = (CW * 0.7) / w; w *= s; h *= s; }
-      if (h > CH * 0.7) { const s = (CH * 0.7) / h; w *= s; h *= s; }
-      w = Math.round(w); h = Math.round(h);
-
-      userItemCount++;
-      const name = 'User Item ' + String(userItemCount).padStart(3, '0');
-      const uid = nextUid++;
-      const z = nextZ++;
-      roomItems.push({
-        uid, name, src: dataUrl,
-        x: Math.round((CW - w) / 2),
-        y: Math.round((CH - h) / 2),
-        z, w, h, mirrored: false,
-        isUserItem: true
-      });
-      focusUid = uid;
-      renderCanvas();
-      renderItemList();
-    };
-    img.onerror = () => {
-      alert(lang === 'cn' ? '无法加载图片' : 'Failed to load image');
-    };
-    img.src = dataUrl;
-  };
-  reader.readAsDataURL(file);
+  // Reset input so same file can be re-uploaded
   input.value = '';
 }
 
