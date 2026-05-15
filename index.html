@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>QQ家园</title>
+<style>
+
+@font-face { font-family: 'WQY12'; src: url('./font.ttf') format('truetype'); } html, body, button, input, select, textarea, div, span, td, a { font-family: 'WQY12' !important; font-size: 12px !important; line-height: 12px !important; font-weight: normal; font-style: normal; -webkit-font-smoothing: none; -moz-osx-font-smoothing: unset; text-rendering: geometricPrecision; }
+
+/* Top navigation bar */
+#topFrame {
+  background: url('i02.gif') repeat-x;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+}
+#topFrame .logo-cell {
+  background: url('i18.gif') no-repeat;
+  width: 175px;
+  height: 66px;
+}
+#topFrame .nav-upper {
+  background: url('i19.gif') repeat-x;
+  height: 27px;
+  text-align: right;
+  vertical-align: middle;
+  padding-right: 10px;
+}
+#topFrame .nav-lower {
+  background: url('i20.gif') repeat-x;
+  height: 39px;
+  text-align: right;
+  vertical-align: middle;
+}
+.cat-link {
+  margin-right: 10px;
+  color: #D62901;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+}
+.cat-link:hover { text-decoration: underline; }
+
+#subNavBar {
+  background: url('i02.gif') repeat-x;
+  height: 23px;
+  width: 100%;
+  display: none;
+}
+#subNavBar.visible { display: block; }
+#subNavContent {
+  text-align: right;
+  padding-right: 10px;
+  line-height: 23px;
+}
+#subNavContent a {
+  margin: 0 4px;
+  color: #663300;
+  font-size: 12px;
+}
+
+/* ── Room canvas area ── */
+#divAzitRoomBody {
+  overflow: hidden;
+  width: 616px;
+  height: 389px;
+  position: relative;
+  background: #ffffff url('index_con24b.gif') no-repeat center center;
+  cursor: default;
+}
+.room-item-div {
+  touch-action: none;
+
+  position: absolute;
+  cursor: move;
+  border: 2px solid transparent;
+}
+.room-item-div:hover, .room-item-div.hovered {
+  border-color: #ff69b4;
+}
+.room-item-div.selected {
+  border-color: #ff1493;
+}
+.room-item-div img {
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+
+
+}
+
+.retro-en-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  font-family: inherit;
+
+  background: #ffe0c0;
+  border: 1px solid #cca080;
+  border-radius: 6px;
+
+  color: #996633;
+  cursor: pointer;
+
+  padding: 0;
+  margin: 0;
+
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.retro-en-btn:hover {
+  background: #ffd0a8;
+}
+
+.en-img-btn {
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #ffe0c0;
+  border: 1px solid #cca080;
+  border-radius: 6px;
+
+  color: #996633;
+
+  font-size: 10px;
+  font-family: inherit;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  vertical-align: middle;
+
+  user-select: none;
+
+  line-height: 1;
+}
+
+.en-img-btn:hover {
+  background: #ffd0a8;
+}
+
+/* Context menu */
+#ctxMenu {
+  display: none;
+  position: absolute;
+  z-index: 99999;
+  background: #ffe0f0;
+  border: 2px solid #ff69b4;
+  padding: 2px 0;
+  min-width: 90px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+  font-size: 12px;
+}
+#ctxMenu .ctx-item {
+  padding: 4px 12px;
+  cursor: pointer;
+  color: #cc2266;
+  white-space: nowrap;
+}
+#ctxMenu .ctx-item:hover {
+  background: #ff69b4;
+  color: #fff;
+}
+
+/* Item list panel */
+.clsStyleScroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.itemListNameDiv {
+  padding: 2px 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 12px;
+}
+.clsFocusItemList {
+  color: #fff;
+  background-color: #525dbd;
+}
+.il-row {
+  display: flex;
+  align-items: center;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+.il-row:hover { background: #e8e0f0; }
+
+/* Shop item cards */
+.shop-item-card {
+  display: inline-block;
+  vertical-align: top;
+  width: 101px;
+  border: 1px solid #ECDECF;
+  background: #FFFAF3;
+  margin: 2px 2px;
+  text-align: center;
+  padding: 4px 2px;
+}
+.shop-item-card:hover { border-color: #ff8c42; }
+.shop-item-card .thumb-wrap {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.shop-item-card .thumb-wrap img {
+  max-width: 84px;
+  max-height: 84px;
+}
+
+/* change bar buttons */
+.change-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #663300;
+  font-size: 12px;
+  padding: 2px 4px;
+  font-family: inherit;
+}
+.change-btn:hover { text-decoration: underline; }
+.change-btn.danger { color: #FF3300; }
+
+/* Modal overlay */
+#modalOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 100000;
+  align-items: center;
+  justify-content: center;
+}
+#modalOverlay.visible { display: flex; }
+#modalBox {
+  background: #FFF8F2;
+  border: 2px solid #D4915A;
+  padding: 16px;
+  min-width: 280px;
+  box-shadow: 3px 3px 15px rgba(0,0,0,0.2);
+  font-size: 12px;
+}
+#modalBox h3 { margin: 0 0 8px; color: #993300; font-size: 14px; }
+#modalBox input[type="text"] {
+  width: 95%;
+  height: 22px;
+  border: 1px solid #cca080;
+  padding: 0 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+#modalBox p { margin: 0 0 10px; color: #663300; }
+.modal-btns { text-align: right; }
+.modal-btns button {
+  padding: 3px 16px;
+  border: 1px solid #cca080;
+  background: #FFE8D0;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 6px;
+  font-family: inherit;
+}
+.modal-btns button:hover { background: #FFCC88; }
+
+/* Language toggle */
+#langToggle {
+  font-size: 11px;
+  cursor: pointer;
+  color: #996633;
+  background: #ffe0c0;
+  border: 1px solid #cca080;
+  padding: 1px 8px;
+  margin-left: 10px;
+}
+</style>
+</head>
+<body oncontextmenu="return false;">
+
+<!-- ═══ TOP NAVIGATION (preserving original mall_top.html look) ═══ -->
+<table id="topFrame" width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+
+  </tr>
+  <tr>
+ 
+    <td class="nav-lower">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td height="32" align="right" id="categoryNav" style="padding-right:10px;">
+            <!-- Categories injected by JS -->
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<div id="subNavBar">
+  <div id="subNavContent"></div>
+</div>
+
+<!-- ═══ MAIN CONTENT (preserving original mall_main.html structure) ═══ -->
+<table width="960" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr><td height="3"></td></tr>
+</table>
+<table width="960" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <!-- ═══ LEFT COLUMN: Canvas + controls ═══ -->
+    <td width="627" align="left" valign="top">
+      <table width="622" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFF8F2" class="T05">
+        <tr>
+          <td align="center" valign="top">
+            <!-- Spacer -->
+            <table width="616" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+
+            <!-- ═══ Game bar: saved game select + language ═══ -->
+            <table width="616" border="0" cellspacing="0" cellpadding="0" class="gamebar">
+              <tr>
+                <td width="125" height="27"></td>
+                <td width="400">
+                  <span data-i18n="design_plan" style="color:#996633;font-weight:bold;">设计方案</span>
+                  <select id="savedGameSelect" style="width:120px;" onchange="loadSelectedGame()">
+                    <option value="__none__">-- 选择方案 --</option>
+                  </select>
+                  <button id="langToggle" onclick="toggleLang()">CN / EN</button>
+                </td>
+                <td width="91" align="right"><img src="i33.gif" border="0" width="62" height="17" style="cursor:pointer;margin-right:10px;visibility:hidden;"></td>
+              </tr>
+            </table>
+
+            <table width="616" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+
+            <!-- ═══ ROOM CANVAS ═══ -->
+            <table width="616" border="1" cellpadding="0" cellspacing="0" bordercolor="#000000" class="T05">
+              <tr>
+                <td height="389" align="center">
+                  <div id="divAzitRoomBody"></div>
+                </td>
+              </tr>
+            </table>
+
+            <table width="616" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+
+            <!-- ═══ Action bar: 新建 删除 重命名 原始状态 设为默认方案 / Save ═══ -->
+            <table width="616" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="503" height="27" align="left" valign="middle" class="change">
+                  <button class="change-btn" onclick="doNewCanvas()" data-i18n="new">新建</button>
+                  <button class="change-btn" onclick="doDeleteSave()" data-i18n="delete">删除</button>
+                  <button class="change-btn" onclick="doRenameSave()" data-i18n="rename">重命名</button>
+                  <button class="change-btn" onclick="doResetCanvas()" data-i18n="reset">原始状态</button>
+                  <button class="change-btn danger" onclick="doSetDefault()" data-i18n="set_default">设为默认方案</button>
+                </td>
+                <td width="113" valign="middle" align="right">
+                  <img class="lang-btn-cn"
+     src="save.gif"
+     width="98"
+     height="19"
+     border="0"
+     style="cursor:pointer;"
+     onclick="exportSceneGif()">
+
+<span class="en-img-btn lang-btn-en"
+      style="width:98px;height:19px;"
+      onclick="exportSceneGif()">
+  Save
+</span>
+                </td>
+              </tr>
+            </table>
+
+            <table width="616" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+          </td>
+        </tr>
+      </table>
+
+      <!-- ═══ Bottom area: Item list + info ═══ -->
+      <table width="622" border="0" cellspacing="0" cellpadding="0"><tr><td height="3"></td></tr></table>
+      <table width="622" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <!-- Item list panel -->
+          <td width="195" align="left" valign="top">
+            <table width="188" border="0" cellspacing="0" cellpadding="0" class="T05" style="background:#FFF8F2;border:1px solid #e0c8b0;">
+              <tr>
+                <td align="center" valign="middle">
+                  <table width="184" border="0" cellspacing="0" cellpadding="0"><tr><td height="1"></td></tr></table>
+                  <table width="184" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td height="28" style="background:#f0e8d8;padding-left:6px;">
+                        <input id="bChkAll" onclick="ciCheckAllBox(this.checked)" type="checkbox">
+                        &nbsp;<b data-i18n="items_label">装扮中的物品</b>
+                      </td>
+                    </tr>
+                  </table>
+                  <table width="184" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td height="174">
+                        <div class="clsStyleScroll" id="divItemList" style="padding-top:5px;height:160px;">
+                          <table style="table-layout:fixed;" cellspacing="0" cellpadding="0" width="100%" border="0">
+                            <tbody id="pRoomItemList"></tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <table width="184" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td height="28" align="center" valign="middle" bgcolor="#EFEFEF">
+                        <a href="javascript:ciItemMoveZ(true)"><img src="mall_con37.gif" width="34" height="17" border="0" align="absmiddle" title="上移"></a>&nbsp;
+                        <a href="javascript:ciItemMoveZ(false)"><img src="mall_con38.gif" width="34" height="17" border="0" align="absmiddle" title="下移"></a>&nbsp;
+                        <a href="javascript:ciRemoveItem()"><img src="mall_con39.gif" width="34" height="17" border="0" align="absmiddle" title="删除"></a>&nbsp;
+                        <a href="javascript:doSave()"><img src="mall_con40.gif" width="34" height="17" border="0" align="absmiddle" title="保存"></a>
+                      </td>
+                    </tr>
+                  </table>
+                  <table width="184" border="0" cellspacing="0" cellpadding="0"><tr><td height="1"></td></tr></table>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td width="427" align="right" valign="top">
+            <!-- Info area (originally mall_commend iframe, now shows tips) -->
+            <div style="width:426px;height:235px;background:#FFF8F2;border:1px solid #e0c8b0;padding:10px;overflow-y:auto;">
+              <div style="background:#f0e8d8;padding:4px 8px;margin-bottom:8px;"><b data-i18n="tips_title">操作提示</b></div>
+              <div id="tipsContent" style="font-size:12px;color:#663300;line-height:1.6;">
+                <span data-i18n="tip1">• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间</span><br>
+                <span data-i18n="tip2">• 左键拖拽移动物品</span><br>
+                <span data-i18n="tip3">• 右键点击物品打开菜单(镜像/层级/复制/删除)</span><br>
+                <span data-i18n="tip4">• 鼠标悬停物品时显示粉色边框</span><br>
+                <span data-i18n="tip5">• 使用顶部导航栏浏览分类</span><br>
+                <span data-i18n="tip6">• 点击"保存"按钮(💾)保存方案为JSON文件</span><br>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+
+    <!-- ═══ RIGHT COLUMN: Shop (preserving shop_103_1.html look) ═══ -->
+    <td width="333" align="right" valign="top">
+      <table width="332" border="0" cellspacing="0" cellpadding="0" class="T05" style="background:#FFF8F2;border:1px solid #e0c8b0;">
+        <tr>
+          <td align="center" valign="middle">
+            <table width="326" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+
+            <!-- Search bar -->
+            <table width="326" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td height="27" align="center">
+                  <input id="searchInput" name="home_search_keyword" type="text" class="I01" value="" size="12" maxlength="30" style="width:140px;" placeholder="搜索物品名称..." data-i18n-placeholder="search_ph" onkeydown="if(event.key==='Enter')doSearch()">
+                  <img class="lang-btn-cn"
+     src="i20(1).gif"
+     width="49"
+     height="27"
+     border="0"
+     align="absmiddle"
+     style="cursor:pointer;"
+     onclick="doSearch()">
+
+<span class="en-img-btn lang-btn-en"
+      style="width:49px;height:27px;"
+      onclick="doSearch()">
+  Search
+</span>
+                </td>
+              </tr>
+            </table>
+
+            <table width="326" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+
+            <!-- Shop grid -->
+            <div id="shopGrid" style="min-height:500px;padding:4px;"></div>
+
+            <!-- Pagination -->
+            <table width="326" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td height="27" align="center">
+                  <a href="javascript:shopPrev()"><img src="mall_con28.gif" width="13" height="13" border="0" align="absmiddle"></a>&nbsp;
+                  <span data-i18n="page_prefix">第</span>
+                  <input id="pageInput" type="text" size="3" maxlength="3" class="I01" value="1" style="width:30px;text-align:center;" onkeydown="if(event.key==='Enter')shopGoto()">
+                  /&nbsp;<span id="totalPagesSpan">1</span><span data-i18n="page_suffix">页</span>&nbsp;
+                  <a href="javascript:shopNext()"><img src="mall_con29.gif" width="13" height="13" border="0" align="absmiddle"></a>&nbsp;
+                  <a href="javascript:shopGoto()">
+
+  <img class="lang-btn-cn"
+       src="mall_con30.gif"
+       width="49"
+       height="21"
+       border="0"
+       align="absmiddle">
+
+  <span class="en-img-btn lang-btn-en"
+        style="width:49px;height:21px;">
+    Go
+  </span>
+
+</a>
+                </td>
+              </tr>
+            </table>
+
+            <table width="326" border="0" cellspacing="0" cellpadding="0"><tr><td height="2"></td></tr></table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- Context Menu (hidden, positioned absolutely) -->
+<div id="ctxMenu">
+  <div class="ctx-item" onclick="ctxAction('mirror')" data-i18n="ctx_mirror">镜像翻转</div>
+  <div class="ctx-item" onclick="ctxAction('toTop')" data-i18n="ctx_toTop">置于顶层</div>
+  <div class="ctx-item" onclick="ctxAction('toBottom')" data-i18n="ctx_toBottom">置于底层</div>
+  <div class="ctx-item" onclick="ctxAction('layerUp')" data-i18n="ctx_layerUp">上移一层</div>
+  <div class="ctx-item" onclick="ctxAction('layerDown')" data-i18n="ctx_layerDown">下移一层</div>
+  <div class="ctx-item" onclick="ctxAction('copy')" data-i18n="ctx_copy">复制</div>
+  <div class="ctx-item" onclick="ctxAction('delete')" data-i18n="ctx_delete">删除</div>
+</div>
+
+<!-- Modal -->
+<div id="modalOverlay">
+  <div id="modalBox">
+    <h3 id="modalTitle"></h3>
+    <p id="modalText"></p>
+    <input type="text" id="modalInput" style="display:none;">
+    <div class="modal-btns">
+      <button onclick="modalCancel()" data-i18n="cancel_btn">取消</button>
+      <button onclick="modalConfirm()" data-i18n="ok_btn">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// INTERNATIONALIZATION
+// ═══════════════════════════════════════════════════
+let lang = 'cn';
+let dragMoved = false;
+const I18N = {
+  cn: {
+    design_plan:'设计方案', new:'新建', delete:'删除', rename:'重命名', reset:'原始状态',
+    set_default:'设为默认方案', items_label:'装扮中的物品', tips_title:'操作提示',
+    tip1:'• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间',
+    tip2:'• 左键拖拽移动物品', tip3:'• 右键点击物品打开菜单(镜像/层级/复制/删除)',
+    tip4:'• 鼠标悬停物品时显示粉色边框', tip5:'• 使用顶部导航栏浏览分类',
+    tip6:'• 点击"保存"按钮(💾)保存方案为JSON文件',
+    ctx_mirror:'镜像翻转', ctx_toTop:'置于顶层', ctx_toBottom:'置于底层',
+    ctx_layerUp:'上移一层', ctx_layerDown:'下移一层', ctx_copy:'复制', ctx_delete:'删除',
+    cancel_btn:'取消', ok_btn:'确定',
+    search_ph:'搜索物品名称...', page_prefix:'第', page_suffix:'页',
+    save_title:'保存方案', save_prompt:'请输入方案名称:', new_title:'新建方案',
+    new_prompt:'请输入新方案名称:', del_title:'删除方案', del_confirm:'确定删除当前方案？',
+    rename_title:'重命名', rename_prompt:'请输入新名称:',
+    reset_title:'原始状态', reset_confirm:'清空当前画布？(不影响已保存文件)',
+    default_title:'设为默认方案', default_unsaved:'当前未保存，请先输入名称:',
+    default_done:'已设为默认方案！', no_plan:'未加载任何方案', add_btn:'添加',
+    no_items:'没有找到物品', all:'全部',
+  },
+  en: {
+    design_plan:'Design Plan', new:'New', delete:'Delete', rename:'Rename', reset:'Reset',
+    set_default:'Set Default', items_label:'Items in Room', tips_title:'Tips',
+    tip1:'• Click item images or "Add" button in the shop to add to room',
+    tip2:'• Left-click drag to move items', tip3:'• Right-click items for menu (Mirror/Layer/Copy/Delete)',
+    tip4:'• Hover over items to see pink highlight', tip5:'• Browse categories in the top navigation',
+    tip6:'• Click save button (💾) to save as JSON file',
+    ctx_mirror:'Mirror', ctx_toTop:'To Top', ctx_toBottom:'To Bottom',
+    ctx_layerUp:'Layer Up', ctx_layerDown:'Layer Down', ctx_copy:'Copy', ctx_delete:'Delete',
+    cancel_btn:'Cancel', ok_btn:'OK',
+    search_ph:'Search items...', page_prefix:'Page ', page_suffix:'',
+    save_title:'Save Plan', save_prompt:'Enter plan name:', new_title:'New Plan',
+    new_prompt:'Enter new plan name:', del_title:'Delete Plan', del_confirm:'Delete current plan?',
+    rename_title:'Rename', rename_prompt:'Enter new name:',
+    reset_title:'Reset Canvas', reset_confirm:'Clear canvas? (Saved file not affected)',
+    default_title:'Set Default', default_unsaved:'Not saved yet. Enter a name:',
+    default_done:'Set as default!', no_plan:'No plan loaded', add_btn:'Add',
+    no_items:'No items found', all:'All',
+  }
+};
+function t(k) { return I18N[lang][k] || k; }
+function updateLangButtons() {
+  const isEn = lang === 'en';
+
+  document.querySelectorAll('.lang-btn-cn').forEach(el => {
+    el.style.display = isEn ? 'none' : '';
+  });
+
+  document.querySelectorAll('.lang-btn-en').forEach(el => {
+    el.style.display = isEn ? 'inline-flex' : 'none';
+  });
+}
+function toggleLang() {
+  lang = lang === 'cn' ? 'en' : 'cn';
+  allItems.forEach(item => {
+  item.name = lang === 'en'
+    ? item.name_en
+    : item.name_cn;
+});
+updateLangButtons();
+  applyI18n();
+  buildCategoryNav();
+  renderShop();
+  renderItemList();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (I18N[lang][k] !== undefined) el.textContent = I18N[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const k = el.getAttribute('data-i18n-placeholder');
+    if (I18N[lang][k] !== undefined) el.placeholder = I18N[lang][k];
+  });
+  populateSavedSelect();
+}
+
+
+// ═══════════════════════════════════════════════════
+// CATEGORY STRUCTURE (from original mall.js / mall_top.html)
+// ═══════════════════════════════════════════════════
+const CATEGORIES = [
+  { id:'bg', cn:'背景', en:'Background', subs:[
+    {id:'wallpaper',cn:'壁纸',en:'Wallpaper'},{id:'floor',cn:'地板',en:'Floor'},
+    {id:'special_bg',cn:'特殊背景',en:'Special BG'},{id:'door_window',cn:'门窗',en:'Door & Window'},
+    {id:'other_bg',cn:'其他',en:'Other'}
+  ]},
+  { id:'furniture', cn:'家具', en:'Furniture', subs:[
+    {id:'bed',cn:'床',en:'Bed'},{id:'cabinet',cn:'柜子',en:'Cabinet'},
+    {id:'wardrobe',cn:'衣柜',en:'Wardrobe'},{id:'dresser',cn:'化妆台',en:'Dresser'},
+    {id:'table',cn:'桌子',en:'Table'},{id:'chair_sofa',cn:'椅子沙发',en:'Chair & Sofa'},
+    {id:'bathroom_f',cn:'浴室',en:'Bathroom'},{id:'kitchen_f',cn:'厨房',en:'Kitchen'},
+    {id:'other_f',cn:'其他',en:'Other'}
+  ]},
+  { id:'daily', cn:'生活用品', en:'Daily Items', subs:[
+    {id:'appliance',cn:'家用电器',en:'Appliances'},{id:'boutique',cn:'家用精品',en:'Boutique'},
+    {id:'bath_item',cn:'浴室用物品',en:'Bath Items'},{id:'kitchen_item',cn:'厨房用物品',en:'Kitchen Items'},
+    {id:'plant',cn:'植物',en:'Plants'},{id:'other_d',cn:'其他',en:'Other'}
+  ]},
+  { id:'companion', cn:'同居密友', en:'Companions', subs:[
+    {id:'roommate',cn:'同屋',en:'Roommate'},{id:'animal',cn:'动物',en:'Animals'},
+    {id:'other_c',cn:'其他',en:'Other'}
+  ]},
+  { id:'special', cn:'特殊物品', en:'Special', subs:[
+    {id:'minigame',cn:'迷你游戏',en:'Mini Games'}
+  ]},
+  { id:'sample', cn:'样板房', en:'Templates', subs:[
+    {id:'simple',cn:'简洁',en:'Simple'},{id:'modern',cn:'现代',en:'Modern'},
+    {id:'cozy',cn:'温馨',en:'Cozy'},{id:'luxury',cn:'豪华',en:'Luxury'},
+    {id:'unique',cn:'特色',en:'Unique'},{id:'other_s',cn:'其他',en:'Other'}
+  ]}
+];
+
+let activeCatId = null, activeSubId = null;
+
+function buildCategoryNav() {
+  const nav = document.getElementById('categoryNav');
+  let html = '';
+  CATEGORIES.forEach(cat => {
+    const name = lang === 'cn' ? cat.cn : cat.en;
+    html += `<span class="cat-link" onmouseenter="showSubNav('${cat.id}')" onclick="selectCategory('${cat.id}')">${name}</span>`;
+  });
+  nav.innerHTML = html;
+  if (activeCatId) showSubNav(activeCatId);
+  else hideSubNav();
+}
+
+function showSubNav(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  if (!cat) return;
+  const bar = document.getElementById('subNavBar');
+  const content = document.getElementById('subNavContent');
+  let html = '';
+  cat.subs.forEach((sub, i) => {
+    const name = lang === 'cn' ? sub.cn : sub.en;
+    if (i > 0) html += '&nbsp;|&nbsp;';
+    html += `<a href="javascript:void(0)" onclick="selectSubCategory('${catId}','${sub.id}')">${name}</a>`;
+  });
+  content.innerHTML = html;
+  bar.classList.add('visible');
+}
+
+function hideSubNav() {
+  document.getElementById('subNavBar').classList.remove('visible');
+}
+
+function selectCategory(catId) {
+  activeCatId = catId;
+  activeSubId = null;
+  searchQuery = '';
+  shopPage = 1;
+  showSubNav(catId);
+  renderShop();
+}
+
+function selectSubCategory(catId, subId) {
+  activeCatId = catId;
+  activeSubId = subId;
+  searchQuery = '';
+  shopPage = 1;
+  renderShop();
+}
+
+// ═══════════════════════════════════════════════════
+// ITEM CATALOG — Texture folder scanning + fallback
+// ═══════════════════════════════════════════════════
+let allItems = [];
+let textureLoaded = false;
+let searchQuery = '';
+let shopPage = 1;
+const PER_PAGE = 9;
+
+async function loadTextures() {
+  // Try server-side scan first (scan.php or scan endpoint)
+  try {
+    const r = await fetch('texture/manifest.json');
+    if (r.ok) {
+      const manifest = await r.json();
+      parseManifest(manifest);
+      textureLoaded = true;
+      return;
+    }
+  } catch(e) {}
+
+  // Try scanning texture folder by probing files
+  const found = await probeTextureFolder();
+  if (found.length > 0) {
+    allItems = found;
+    textureLoaded = true;
+    return;
+  }
+
+  // Fallback: demo items with generated SVG thumbnails
+  generateFallbackItems();
+}
+
+async function probeTextureFolder() {
+  // Try to list the texture directory via a small Node/Python server,
+  // or probe known paths. For static hosting we attempt fetch on directory.
+  const items = [];
+  const exts = ['png','gif','jpg','bmp','webp','jpeg'];
+
+  // First try fetching a directory listing (works on some servers like Apache with autoindex)
+  try {
+    const r = await fetch('texture/');
+    if (r.ok) {
+      const html = await r.text();
+      // Parse directory listing for subdirectory names
+      const catDirs = [...html.matchAll(/href="([^"]*?)\/?"/g)]
+        .map(m => decodeURIComponent(m[1]))
+        .filter(n => /^\d+\./.test(n) && !n.includes('..'));
+
+      for (const catDir of catDirs) {
+        const catIdx = parseInt(catDir) - 1;
+        const cat = CATEGORIES[catIdx];
+        if (!cat) continue;
+
+        try {
+          const r2 = await fetch(`texture/${catDir}/`);
+          if (!r2.ok) continue;
+          const html2 = await r2.text();
+          const subDirs = [...html2.matchAll(/href="([^"]*?)\/?"/g)]
+            .map(m => decodeURIComponent(m[1]))
+            .filter(n => /^\d+\./.test(n) && !n.includes('..'));
+
+          for (const subDir of subDirs) {
+            const subIdx = parseInt(subDir) - 1;
+            const sub = cat.subs[subIdx];
+            if (!sub) continue;
+
+            try {
+              const r3 = await fetch(`texture/${catDir}/${subDir}/`);
+              if (!r3.ok) continue;
+              const html3 = await r3.text();
+              const files = [...html3.matchAll(/href="([^"]*?)"/g)]
+                .map(m => decodeURIComponent(m[1]))
+                .filter(n => {
+                  const ext = n.split('.').pop().toLowerCase();
+                  return exts.includes(ext) && /^\d+-\d+/.test(n);
+                });
+
+              for (const file of files) {
+                const match = file.match(/^(\d+)-(\d+)(.+)\.(\w+)$/);
+                if (!match) continue;
+                const page = parseInt(match[1]);
+                const order = parseInt(match[2]);
+                const rawName = match[3];
+                items.push({
+                  id: `${catIdx}_${subIdx}_${page}_${order}`,
+                  name: rawName,
+                  src: `texture/${catDir}/${subDir}/${file}`,
+                  catId: cat.id,
+                  subId: sub.id,
+                  page, order
+                });
+              }
+            } catch(e) {}
+          }
+        } catch(e) {}
+      }
+    }
+  } catch(e) {}
+
+  // If directory listing didn't work, try brute-force probing
+  if (items.length === 0) {
+    for (let ci = 0; ci < CATEGORIES.length; ci++) {
+      const cat = CATEGORIES[ci];
+      for (let si = 0; si < cat.subs.length; si++) {
+        const sub = cat.subs[si];
+        // Try common folder name patterns
+        const catNames = [`${ci+1}.${cat.cn}`, `${ci+1}`];
+        const subNames = [`${si+1}.${sub.cn}`, `${si+1}`];
+
+        for (const cn of catNames) {
+          for (const sn of subNames) {
+            for (let p = 1; p <= 30; p++) {
+              let pageHasItem = false;
+              for (let o = 1; o <= 9; o++) {
+                let found = false;
+                for (const ext of exts) {
+                  // We can't know the name part, try without it first
+                  // The pattern is P-Oname.ext, so we need to know name
+                  // Try a HEAD request for any matching pattern
+                  // This is impractical without a manifest, so we rely on directory listing above
+                  break;
+                }
+              }
+              if (!pageHasItem && p > 1) break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return items;
+}
+
+function parseManifest(manifest) {
+  allItems = [];
+
+  if (Array.isArray(manifest.items)) {
+    manifest.items.forEach(it => {
+      const cat = CATEGORIES[it.catIndex];
+      const sub = cat && cat.subs[it.subIndex];
+
+      allItems.push({
+        id: `m_${it.catIndex}_${it.subIndex}_${it.page}_${it.order}`,
+
+        // keep originals
+        name_cn: it.name || 'Unnamed',
+        name_en: it.name_en || it.name || 'Unnamed',
+
+        // active display name
+        name: lang === 'en'
+          ? (it.name_en || it.name || 'Unnamed')
+          : (it.name || 'Unnamed'),
+
+        src: it.src,
+
+        catId: cat ? cat.id : 'bg',
+        subId: sub ? sub.id : 'wallpaper',
+
+        page: it.page,
+        order: it.order
+      });
+    });
+  }
+}
+
+function generateFallbackItems() {
+  const names = [
+    '紫色的梦','新世纪','舒睡床','金碧辉煌','彩色双人床','一个人住',
+    '桃红盛放','双层铁床','芬芳地床','清扫房间','圣诞小镇','蓝色海洋',
+    '粉红公主','阳光花园','月光宝盒','星空走廊','彩虹桥','可爱熊',
+    '小猫咪','温馨壁炉','古典书架','现代沙发','水晶灯','魔法镜',
+    '许愿树','小企鹅','大象玩偶','向日葵','仙人掌','蘑菇灯',
+    '贝壳音箱','迷你钢琴','复古电话','地球仪','望远镜','旋转木马',
+    '小风车','纸鹤灯','竹帘','樱花树','石灯笼','锦鲤池',
+    '富贵竹','玫瑰花束','薰衣草','小喷泉','秋千椅','吊床'
+  ];
+  allItems = [];
+  let idx = 0;
+  CATEGORIES.forEach((cat, ci) => {
+    cat.subs.forEach((sub, si) => {
+      const np = 2 + (ci + si) % 3;
+      for (let p = 1; p <= np; p++) {
+        const ni = p === np ? 3 + ((ci+si+p)%6) : 9;
+        for (let o = 1; o <= ni; o++) {
+          const nm = names[idx % names.length];
+          const hue = (ci*55 + si*30 + idx*47) % 360;
+          allItems.push({
+            id: `f_${ci}_${si}_${p}_${o}`, name: nm,
+            src: null, color: `hsl(${hue},60%,72%)`,
+            catId: cat.id, subId: sub.id, page: p, order: o
+          });
+          idx++;
+        }
+      }
+    });
+  });
+}
+
+function makePlaceholderSVG(item, size) {
+  const c = item.color || '#ccc';
+  const shapes = [
+    `<rect x="10" y="25" width="60" height="45" rx="5" fill="${c}"/><rect x="15" y="15" width="50" height="14" rx="3" fill="${c}" opacity=".8"/>`,
+    `<polygon points="40,5 70,50 10,50" fill="${c}"/><rect x="35" y="50" width="10" height="25" fill="#b89070"/>`,
+    `<ellipse cx="40" cy="55" rx="22" ry="14" fill="#c87a50"/><circle cx="40" cy="28" r="24" fill="${c}"/>`,
+    `<rect x="8" y="8" width="64" height="64" rx="2" fill="#ddc8a8" stroke="#aa8866" stroke-width="2"/><rect x="14" y="14" width="52" height="52" fill="${c}"/>`,
+    `<ellipse cx="40" cy="48" rx="36" ry="24" fill="${c}" opacity=".8"/><ellipse cx="40" cy="48" rx="24" ry="16" fill="${c}"/>`,
+  ];
+  const si = Math.abs(hashStr(item.id)) % shapes.length;
+  return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 80 80"><rect width="80" height="80" fill="#f8f0e8" rx="4"/>${shapes[si]}</svg>`)}`;
+}
+function hashStr(s) { let h=0; for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;} return h; }
+function getThumbSrc(item) { return item.src || makePlaceholderSVG(item, 84); }
+function getFullSrc(item) { return item.src || makePlaceholderSVG(item, 160); }
+
+// ═══════════════════════════════════════════════════
+// SHOP RENDERING
+// ═══════════════════════════════════════════════════
+function getFilteredItems() {
+  let items = allItems;
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    items = items.filter(it => it.name.toLowerCase().includes(q));
+  } else {
+    if (activeCatId) items = items.filter(it => it.catId === activeCatId);
+    if (activeSubId) items = items.filter(it => it.subId === activeSubId);
+  }
+  return items;
+}
+
+function renderShop() {
+  const filtered = getFilteredItems();
+  const totalP = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  if (shopPage > totalP) shopPage = totalP;
+  if (shopPage < 1) shopPage = 1;
+  document.getElementById('totalPagesSpan').textContent = totalP;
+  document.getElementById('pageInput').value = shopPage;
+
+  const start = (shopPage - 1) * PER_PAGE;
+  const pageItems = filtered.slice(start, start + PER_PAGE);
+  const grid = document.getElementById('shopGrid');
+
+  if (pageItems.length === 0) {
+    grid.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">${t('no_items')}</div>`;
+    return;
+  }
+
+  // Render in rows of 3 (matching original T03 table layout)
+  let html = '';
+  for (let r = 0; r < 3; r++) {
+    html += '<table width="318" border="0" cellspacing="0" cellpadding="0"><tr align="center" valign="middle">';
+    for (let c = 0; c < 3; c++) {
+      const item = pageItems[r * 3 + c];
+      if (!item) {
+        html += '<td width="103" align="left"></td>';
+        continue;
+      }
+      html += `
+        <td width="103" align="left">
+          <table width="101" border="0" cellpadding="0" cellspacing="1" bgcolor="#ECDECF">
+            <tr><td align="center" valign="top" bgcolor="#FFFAF3">
+              <table width="86" border="0" cellspacing="0" cellpadding="0">
+                <tr><td align="center" valign="middle" height="90">
+                  <table width="84" border="0" cellspacing="0" cellpadding="0" class="T05">
+                    <tr><td>
+                      <a style="cursor:pointer;" onclick="addItemToRoom(allItems.find(i=>i.id==='${item.id}'))">
+                        <img src="${getThumbSrc(item)}" width="84" height="84" border="0">
+                      </a>
+                    </td></tr>
+                  </table>
+                </td></tr>
+                <tr><td align="center" valign="middle" height="18">
+                  <span class="F03" title="${item.name}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:86px;">${item.name}</span>
+                </td></tr>
+                <tr><td align="center" valign="middle" height="18">
+  ${
+    lang === 'en'
+      ? `
+        <button class="retro-en-btn"
+                style="width:38px;height:17px;"
+                onclick="addItemToRoom(allItems.find(i=>i.id==='${item.id}'))">
+          Try
+        </button>
+      `
+      : `
+        <a href="javascript:void(0)"
+           onclick="addItemToRoom(allItems.find(i=>i.id==='${item.id}'))">
+          <img src="i16(2).gif"
+               width="38"
+               height="17"
+               border="0">
+        </a>
+      `
+  }</tr>
+              </table>
+            </td></tr>
+          </table>
+        </td>`;
+    }
+    html += '</tr></table>';
+  }
+  grid.innerHTML = html;
+}
+
+function shopPrev() { shopPage--; renderShop(); }
+function shopNext() { shopPage++; renderShop(); }
+function shopGoto() {
+  const v = parseInt(document.getElementById('pageInput').value);
+  if (!isNaN(v)) { shopPage = v; renderShop(); }
+}
+function doSearch() {
+  searchQuery = document.getElementById('searchInput').value.trim();
+  activeCatId = null; activeSubId = null;
+  shopPage = 1;
+  hideSubNav();
+  renderShop();
+}
+
+// ═══════════════════════════════════════════════════
+// ROOM CANVAS — Items, dragging, z-layers
+// ═══════════════════════════════════════════════════
+let roomItems = [];
+let nextUid = 1;
+let nextZ = 1;
+let focusUid = null;  // currently selected/focused item
+let dragState = null; // {uid, startX, startY, origX, origY}
+
+const CW = 616, CH = 389;
+
+function addItemToRoom(item) {
+  if (!item) return;
+  const img = new Image();
+  img.onload = () => {
+    let w = img.naturalWidth, h = img.naturalHeight;
+	if (
+	  item.subId === 'special_bg' &&
+	  (w < CW || h < CH)
+	) {
+	  w = CW;
+	  h = CH;
+	}
+    pushItem(item, w, h);
+  };
+  img.onerror = () => pushItem(item, 80, 80);
+  img.src = getFullSrc(item);
+}
+
+function pushItem(item, w, h) {
+  const uid = nextUid++;
+  const z = nextZ++;
+  roomItems.push({
+    uid, name: item.name, src: getFullSrc(item),
+    x: Math.round((CW - w) / 2), y: Math.round((CH - h) / 2),
+    z, w, h, mirrored: false
+  });
+  focusUid = null;
+  renderCanvas();
+  renderItemList();
+}
+
+function renderCanvas() {
+  const body = document.getElementById('divAzitRoomBody');
+  // Remove old items (keep context menu outside)
+  body.querySelectorAll('.room-item-div').forEach(el => el.remove());
+
+  const sorted = [...roomItems].sort((a, b) => a.z - b.z);
+  sorted.forEach(ri => {
+    const div = document.createElement('div');
+    div.className = 'room-item-div' + (ri.mirrored ? ' mirrored' : '') +
+                    (ri.uid === focusUid ? ' selected' : '');
+    div.style.left = ri.x + 'px';
+    div.style.top = ri.y + 'px';
+    div.style.zIndex = ri.z;
+    div.dataset.uid = ri.uid;
+
+    const img = document.createElement('img');
+    img.src = ri.src;
+    img.width = ri.w;
+    img.height = ri.h;
+    img.draggable = false;
+    div.appendChild(img);
+
+    // Mouse events
+div.addEventListener('pointerdown', onItemMouseDown);
+    div.addEventListener('mouseenter', () => div.classList.add('hovered'));
+    div.addEventListener('mouseleave', () => div.classList.remove('hovered'));
+
+    body.appendChild(div);
+  });
+}
+
+function onItemMouseDown(e) {
+
+  const div = e.currentTarget;
+
+  const uid =
+    parseInt(div.dataset.uid);
+
+  const ri =
+    roomItems.find(r => r.uid === uid);
+
+  if (!ri) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  hideCtxMenu();
+
+  // ===== RIGHT CLICK (PC) =====
+  if (
+    e.pointerType === 'mouse' &&
+    e.button === 2
+  ) {
+
+    focusUid = uid;
+
+    renderCanvas();
+    renderItemList();
+
+    showCtxMenu(ri);
+
+    return;
+  }
+
+  // ===== TOUCH (PHONE) =====
+  if (e.pointerType === 'touch') {
+
+    focusUid = uid;
+
+    renderCanvas();
+    renderItemList();
+
+    showCtxMenu(ri);
+
+  }
+
+  // ===== START DRAG =====
+  dragState = {
+    uid,
+    startX: e.clientX,
+    startY: e.clientY,
+    origX: ri.x,
+    origY: ri.y,
+    wasSelected:
+      (focusUid === uid),
+    pointerType:
+      e.pointerType
+  };
+
+  dragMoved = false;
+
+}
+
+document.addEventListener('pointermove', (e) => {
+
+  if (!dragState) return;
+
+  const ri =
+    roomItems.find(
+      r => r.uid === dragState.uid
+    );
+
+  if (!ri) {
+    dragState = null;
+    return;
+  }
+
+  const dx =
+    e.clientX - dragState.startX;
+
+  const dy =
+    e.clientY - dragState.startY;
+
+  if (
+    Math.abs(dx) > 3 ||
+    Math.abs(dy) > 3
+  ) {
+    dragMoved = true;
+  }
+
+  ri.x = Math.max(
+    -ri.w + 10,
+    Math.min(
+      CW - 10,
+      dragState.origX + dx
+    )
+  );
+
+  ri.y = Math.max(
+    -ri.h + 10,
+    Math.min(
+      CH - 10,
+      dragState.origY + dy
+    )
+  );
+
+  const el = document.querySelector(
+    `.room-item-div[data-uid="${ri.uid}"]`
+  );
+
+  if (el) {
+
+    el.style.left =
+      ri.x + 'px';
+
+    el.style.top =
+      ri.y + 'px';
+
+  }
+
+});
+
+document.addEventListener('pointerup', () => {
+
+  if (!dragState) return;
+
+  // ===== PHONE =====
+  if (dragState.pointerType === 'touch') {
+
+    dragState = null;
+    return;
+
+  }
+
+  // ===== PC CLICK =====
+  if (!dragMoved) {
+
+    if (dragState.wasSelected) {
+
+      focusUid = null;
+
+    } else {
+
+      focusUid = dragState.uid;
+
+    }
+
+    renderCanvas();
+    renderItemList();
+
+  }
+
+  dragState = null;
+
+});
+
+
+
+// Prevent default right-click on canvas
+document.getElementById('divAzitRoomBody').addEventListener('contextmenu', (e) => e.preventDefault());
+
+document
+  .getElementById('divAzitRoomBody')
+  .addEventListener('mousedown', (e) => {
+
+    if (
+      e.target.id === 'divAzitRoomBody'
+    ) {
+
+      focusUid = null;
+
+      document
+        .querySelectorAll('.room-item-div')
+        .forEach(el => {
+          el.classList.remove('selected');
+        });
+
+      renderItemList();
+
+    }
+
+});
+
+// ═══════════════════════════════════════════════════
+// CONTEXT MENU
+// ═══════════════════════════════════════════════════
+function showCtxMenu(ri) {
+  const menu = document.getElementById('ctxMenu');
+  // Position at right side of item
+  let mx = ri.x + ri.w + 4;
+  let my = ri.y;
+  if (mx + 100 > CW) mx = Math.max(0, ri.x - 100);
+  if (my + 180 > CH) my = Math.max(0, CH - 180);
+
+  const body = document.getElementById('divAzitRoomBody');
+  menu.style.left = mx + 'px';
+  menu.style.top = my + 'px';
+  menu.style.display = 'block';
+  menu.style.position = 'absolute';
+  menu.style.zIndex = '99999';
+
+  // Move menu into canvas container
+  if (menu.parentNode !== body) body.appendChild(menu);
+}
+
+function hideCtxMenu() {
+  document.getElementById('ctxMenu').style.display = 'none';
+}
+
+document.addEventListener('mousedown', (e) => {
+  if (!e.target.closest('#ctxMenu')) hideCtxMenu();
+});
+
+function ctxAction(action) {
+  const ri = roomItems.find(r => r.uid === focusUid);
+  if (!ri) { hideCtxMenu(); return; }
+
+  switch(action) {
+    case 'mirror':
+      ri.mirrored = !ri.mirrored;
+      break;
+    case 'toTop': {
+      const maxZ = Math.max(...roomItems.map(r => r.z));
+      const top = roomItems.find(r => r.z === maxZ);
+      if (top && top.uid !== ri.uid) { const tmp = ri.z; ri.z = top.z; top.z = tmp; }
+      break;
+    }
+    case 'toBottom': {
+      const minZ = Math.min(...roomItems.map(r => r.z));
+      const bot = roomItems.find(r => r.z === minZ);
+      if (bot && bot.uid !== ri.uid) { const tmp = ri.z; ri.z = bot.z; bot.z = tmp; }
+      break;
+    }
+    case 'layerUp': doLayerUp(ri); break;
+    case 'layerDown': doLayerDown(ri); break;
+    case 'copy': {
+      const uid = nextUid++;
+      const z = nextZ++;
+      roomItems.push({ ...ri, uid, z, x: ri.x + 10, y: ri.y + 10 });
+      focusUid = uid;
+      break;
+    }
+    case 'delete':
+      roomItems = roomItems.filter(r => r.uid !== ri.uid);
+      focusUid = null;
+      break;
+  }
+  hideCtxMenu();
+  renderCanvas();
+  renderItemList();
+}
+
+function rectsOverlap(a, b) {
+  return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+}
+
+function doLayerUp(ri) {
+  // Special rule: if overlapping with smaller items on higher layer, swap with nearest
+  const overlapping = roomItems.filter(o =>
+    o.uid !== ri.uid && o.z > ri.z && rectsOverlap(ri, o) && o.w < 600 && o.h < 300
+  );
+  if (overlapping.length > 0) {
+    overlapping.sort((a,b) => a.z - b.z);
+    const tgt = overlapping[0];
+    const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+  } else {
+    const sorted = [...roomItems].sort((a,b) => a.z - b.z);
+    const idx = sorted.findIndex(r => r.uid === ri.uid);
+    if (idx < sorted.length - 1) {
+      const tgt = sorted[idx + 1];
+      const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+    }
+  }
+}
+
+function doLayerDown(ri) {
+  const overlapping = roomItems.filter(o =>
+    o.uid !== ri.uid && o.z < ri.z && rectsOverlap(ri, o) && o.w < 600 && o.h < 300
+  );
+  if (overlapping.length > 0) {
+    overlapping.sort((a,b) => b.z - a.z);
+    const tgt = overlapping[0];
+    const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+  } else {
+    const sorted = [...roomItems].sort((a,b) => a.z - b.z);
+    const idx = sorted.findIndex(r => r.uid === ri.uid);
+    if (idx > 0) {
+      const tgt = sorted[idx - 1];
+      const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// ITEM LIST PANEL (original pRoomItemList)
+// ═══════════════════════════════════════════════════
+function renderItemList() {
+  const tbody = document.getElementById('pRoomItemList');
+  tbody.innerHTML = '';
+  const sorted = [...roomItems].sort((a,b) => b.z - a.z);
+  sorted.forEach(ri => {
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.innerHTML = `
+      <td width="20" align="center"><input type="checkbox" class="itemChk" data-uid="${ri.uid}"></td>
+      <td><div class="itemListNameDiv ${ri.uid === focusUid ? 'clsFocusItemList' : ''}"
+               onclick="focusItem(${ri.uid})">${ri.name}</div></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('bChkAll').checked = false;
+}
+
+function focusItem(uid) {
+  focusUid = uid;
+  renderCanvas();
+  renderItemList();
+}
+
+function ciCheckAllBox(checked) {
+  document.querySelectorAll('.itemChk').forEach(cb => cb.checked = checked);
+}
+
+function getCheckedUids() {
+  return [...document.querySelectorAll('.itemChk:checked')].map(cb => parseInt(cb.dataset.uid));
+}
+
+function ciRemoveItem() {
+  const uids = getCheckedUids();
+  if (uids.length === 0 && focusUid) {
+    roomItems = roomItems.filter(r => r.uid !== focusUid);
+    focusUid = null;
+  } else {
+    roomItems = roomItems.filter(r => !uids.includes(r.uid));
+    if (uids.includes(focusUid)) focusUid = null;
+  }
+  renderCanvas();
+  renderItemList();
+}
+
+function ciItemMoveZ(bUp) {
+  const uids = getCheckedUids();
+  const targets = uids.length > 0 ? uids : (focusUid ? [focusUid] : []);
+  targets.forEach(uid => {
+    const ri = roomItems.find(r => r.uid === uid);
+    if (ri) bUp ? doLayerUp(ri) : doLayerDown(ri);
+  });
+  renderCanvas();
+  renderItemList();
+}
+
+// ═══════════════════════════════════════════════════
+// SAVE / LOAD (localStorage + JSON download)
+// ═══════════════════════════════════════════════════
+const SAVE_KEY = 'minihouse_saves';
+const DEFAULT_KEY = 'minihouse_default';
+let currentSaveName = null;
+
+async function getSaves() {
+  const r = await fetch('/saves');
+  return await r.json();
+}function putSaves(s) { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); }
+
+async function populateSavedSelect() { const sel = document.getElementById('savedGameSelect'); const saves = await getSaves(); sel.innerHTML = `<option value="__none__"> -- ${lang === 'cn' ? '选择方案' : 'Select Plan'} -- </option>`; Object.keys(saves).forEach(name => { const opt = document.createElement('option'); opt.value = name; opt.textContent = name; if (name === currentSaveName) { opt.selected = true; } sel.appendChild(opt); }); }
+
+async function loadSelectedGame() { const name = document.getElementById( 'savedGameSelect' ).value; if (name === '__none__') { return; } const saves = await getSaves(); if (!saves[name]) { return; } roomItems = saves[name].items.map(it => ({ ...it })); nextUid = Math.max( 1, ...roomItems.map(r => r.uid) ) + 1; nextZ = Math.max( 1, ...roomItems.map(r => r.z) ) + 1; focusUid = null; currentSaveName = name; renderCanvas(); renderItemList(); }
+
+function getCurrentState() {
+  return { items: roomItems.map(ri => ({...ri})), timestamp: Date.now() };
+}
+
+// ── Modal system ──
+let modalCb = null;
+function showModal(title, text, showInput, defVal, cb) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
+  const inp = document.getElementById('modalInput');
+  inp.style.display = showInput ? 'block' : 'none';
+  inp.value = defVal || '';
+  modalCb = cb;
+  document.getElementById('modalOverlay').classList.add('visible');
+  if (showInput) setTimeout(() => inp.focus(), 50);
+}
+function modalConfirm() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+  if (modalCb) { modalCb(document.getElementById('modalInput').value.trim()); modalCb = null; }
+}
+function modalCancel() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+  modalCb = null;
+}
+document.getElementById('modalInput').addEventListener('keydown', e => { if (e.key === 'Enter') modalConfirm(); });
+
+async function doSave() { showModal( t('save_title'), t('save_prompt'), true, currentSaveName || '', async (name) => { if (!name) return; const saveData = { items: roomItems.map(ri => ({ ...ri })), timestamp: Date.now() }; try { const r = await fetch('/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, data: saveData }) }); if (!r.ok) { alert('Save failed'); return; } currentSaveName = name; await populateSavedSelect(); } catch (e) { console.error(e); alert('Save failed'); } } ); }
+
+function doNewCanvas() {
+  showModal(t('new_title'), t('new_prompt'), true, '', name => {
+    if (!name) return;
+    roomItems = []; nextUid = 1; nextZ = 1; focusUid = null;
+    currentSaveName = name;
+    const saves = getSaves();
+    saves[name] = getCurrentState();
+    putSaves(saves);
+    populateSavedSelect();
+    renderCanvas();
+    renderItemList();
+  });
+}
+
+function doDeleteSave() {
+  if (!currentSaveName) { showModal(t('del_title'), t('no_plan'), false, '', ()=>{}); return; }
+  showModal(t('del_title'), t('del_confirm'), false, '', () => {
+    const saves = getSaves();
+    delete saves[currentSaveName];
+    putSaves(saves);
+    if (localStorage.getItem(DEFAULT_KEY) === currentSaveName) localStorage.removeItem(DEFAULT_KEY);
+    currentSaveName = null;
+    populateSavedSelect();
+  });
+}
+
+function doRenameSave() {
+  if (!currentSaveName) { showModal(t('rename_title'), t('no_plan'), false, '', ()=>{}); return; }
+  showModal(t('rename_title'), t('rename_prompt'), true, currentSaveName, newName => {
+    if (!newName || newName === currentSaveName) return;
+    const saves = getSaves();
+    saves[newName] = saves[currentSaveName];
+    delete saves[currentSaveName];
+    if (localStorage.getItem(DEFAULT_KEY) === currentSaveName) localStorage.setItem(DEFAULT_KEY, newName);
+    currentSaveName = newName;
+    putSaves(saves);
+    populateSavedSelect();
+  });
+}
+
+function doResetCanvas() {
+  showModal(t('reset_title'), t('reset_confirm'), false, '', () => {
+    roomItems = []; nextUid = 1; nextZ = 1; focusUid = null;
+    renderCanvas();
+    renderItemList();
+  });
+}
+
+function doSetDefault() {
+  if (currentSaveName) {
+    localStorage.setItem(DEFAULT_KEY, currentSaveName);
+    showModal(t('default_title'), t('default_done'), false, '', ()=>{});
+  } else {
+    showModal(t('default_title'), t('default_unsaved'), true, '', name => {
+      if (!name) return;
+      const saves = getSaves();
+      saves[name] = getCurrentState();
+      putSaves(saves);
+      localStorage.setItem(DEFAULT_KEY, name);
+      currentSaveName = name;
+      populateSavedSelect();
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+async function init() {
+  await loadTextures();
+  updateLangButtons();
+  buildCategoryNav();
+  renderShop();
+  populateSavedSelect();
+  applyI18n();
+
+  // Load default save if exists
+  const defName = localStorage.getItem(DEFAULT_KEY);
+  if (defName) {
+    const saves = getSaves();
+    if (saves[defName]) {
+      roomItems = saves[defName].items.map(it => ({...it}));
+      nextUid = Math.max(1, ...roomItems.map(r => r.uid)) + 1;
+      nextZ = Math.max(1, ...roomItems.map(r => r.z)) + 1;
+      currentSaveName = defName;
+      document.getElementById('savedGameSelect').value = defName;
+      renderCanvas();
+      renderItemList();
+    }
+  }
+}
+init();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
+
+<script type="module" src="gif-export.js"></script>
+</body>
+</html>
