@@ -68,6 +68,8 @@
   cursor: default;
 }
 .room-item-div {
+  touch-action: none;
+
   position: absolute;
   cursor: move;
   border: 2px solid transparent;
@@ -367,11 +369,11 @@
      height="19"
      border="0"
      style="cursor:pointer;"
-     onclick="doSave()">
+     onclick="exportSceneGif()">
 
 <span class="en-img-btn lang-btn-en"
       style="width:98px;height:19px;"
-      onclick="doSave()">
+      onclick="exportSceneGif()">
   Save
 </span>
                 </td>
@@ -545,6 +547,7 @@
 // INTERNATIONALIZATION
 // ═══════════════════════════════════════════════════
 let lang = 'cn';
+let dragMoved = false;
 const I18N = {
   cn: {
     design_plan:'设计方案', new:'新建', delete:'删除', rename:'重命名', reset:'原始状态',
@@ -1092,7 +1095,7 @@ function renderCanvas() {
     div.appendChild(img);
 
     // Mouse events
-    div.addEventListener('mousedown', onItemMouseDown);
+div.addEventListener('pointerdown', onItemMouseDown);
     div.addEventListener('mouseenter', () => div.classList.add('hovered'));
     div.addEventListener('mouseleave', () => div.classList.remove('hovered'));
 
@@ -1101,70 +1104,186 @@ function renderCanvas() {
 }
 
 function onItemMouseDown(e) {
+
   const div = e.currentTarget;
-  const uid = parseInt(div.dataset.uid);
-  const ri = roomItems.find(r => r.uid === uid);
+
+  const uid =
+    parseInt(div.dataset.uid);
+
+  const ri =
+    roomItems.find(r => r.uid === uid);
+
   if (!ri) return;
 
-  focusUid = uid;
-  renderCanvas();
-  renderItemList();
+  e.preventDefault();
+  e.stopPropagation();
 
-  if (e.button === 0) {
-    // Left click: start drag
-    e.preventDefault();
-    e.stopPropagation();
-    hideCtxMenu();
-    const rect = document.getElementById('divAzitRoomBody').getBoundingClientRect();
-    dragState = {
-      uid,
-      startX: e.clientX,
-      startY: e.clientY,
-      origX: ri.x,
-      origY: ri.y
-    };
-  } else if (e.button === 2) {
-    // Right click: context menu
-    e.preventDefault();
-    e.stopPropagation();
-    showCtxMenu(ri);
-  }
-}
+  hideCtxMenu();
 
-document.addEventListener('mousemove', (e) => {
-  if (!dragState) return;
-  const ri = roomItems.find(r => r.uid === dragState.uid);
-  if (!ri) { dragState = null; return; }
+  // ===== RIGHT CLICK (PC) =====
+  if (
+    e.pointerType === 'mouse' &&
+    e.button === 2
+  ) {
 
-  const dx = e.clientX - dragState.startX;
-  const dy = e.clientY - dragState.startY;
-  ri.x = Math.max(-ri.w + 10, Math.min(CW - 10, dragState.origX + dx));
-  ri.y = Math.max(-ri.h + 10, Math.min(CH - 10, dragState.origY + dy));
+    focusUid = uid;
 
-  // Direct DOM update for smooth dragging
-  const el = document.querySelector(`.room-item-div[data-uid="${ri.uid}"]`);
-  if (el) {
-    el.style.left = ri.x + 'px';
-    el.style.top = ri.y + 'px';
-  }
-});
-
-document.addEventListener('mouseup', () => {
-  dragState = null;
-});
-
-// Click on canvas bg to deselect
-document.getElementById('divAzitRoomBody').addEventListener('mousedown', (e) => {
-  if (e.target === e.currentTarget || e.target.id === 'divAzitRoomBody') {
-    focusUid = null;
-    hideCtxMenu();
     renderCanvas();
     renderItemList();
+
+    showCtxMenu(ri);
+
+    return;
   }
+
+  // ===== TOUCH (PHONE) =====
+  if (e.pointerType === 'touch') {
+
+    focusUid = uid;
+
+    renderCanvas();
+    renderItemList();
+
+    showCtxMenu(ri);
+
+  }
+
+  // ===== START DRAG =====
+  dragState = {
+    uid,
+    startX: e.clientX,
+    startY: e.clientY,
+    origX: ri.x,
+    origY: ri.y,
+    wasSelected:
+      (focusUid === uid),
+    pointerType:
+      e.pointerType
+  };
+
+  dragMoved = false;
+
+}
+
+document.addEventListener('pointermove', (e) => {
+
+  if (!dragState) return;
+
+  const ri =
+    roomItems.find(
+      r => r.uid === dragState.uid
+    );
+
+  if (!ri) {
+    dragState = null;
+    return;
+  }
+
+  const dx =
+    e.clientX - dragState.startX;
+
+  const dy =
+    e.clientY - dragState.startY;
+
+  if (
+    Math.abs(dx) > 3 ||
+    Math.abs(dy) > 3
+  ) {
+    dragMoved = true;
+  }
+
+  ri.x = Math.max(
+    -ri.w + 10,
+    Math.min(
+      CW - 10,
+      dragState.origX + dx
+    )
+  );
+
+  ri.y = Math.max(
+    -ri.h + 10,
+    Math.min(
+      CH - 10,
+      dragState.origY + dy
+    )
+  );
+
+  const el = document.querySelector(
+    `.room-item-div[data-uid="${ri.uid}"]`
+  );
+
+  if (el) {
+
+    el.style.left =
+      ri.x + 'px';
+
+    el.style.top =
+      ri.y + 'px';
+
+  }
+
 });
+
+document.addEventListener('pointerup', () => {
+
+  if (!dragState) return;
+
+  // ===== PHONE =====
+  if (dragState.pointerType === 'touch') {
+
+    dragState = null;
+    return;
+
+  }
+
+  // ===== PC CLICK =====
+  if (!dragMoved) {
+
+    if (dragState.wasSelected) {
+
+      focusUid = null;
+
+    } else {
+
+      focusUid = dragState.uid;
+
+    }
+
+    renderCanvas();
+    renderItemList();
+
+  }
+
+  dragState = null;
+
+});
+
+
 
 // Prevent default right-click on canvas
 document.getElementById('divAzitRoomBody').addEventListener('contextmenu', (e) => e.preventDefault());
+
+document
+  .getElementById('divAzitRoomBody')
+  .addEventListener('mousedown', (e) => {
+
+    if (
+      e.target.id === 'divAzitRoomBody'
+    ) {
+
+      focusUid = null;
+
+      document
+        .querySelectorAll('.room-item-div')
+        .forEach(el => {
+          el.classList.remove('selected');
+        });
+
+      renderItemList();
+
+    }
+
+});
 
 // ═══════════════════════════════════════════════════
 // CONTEXT MENU
@@ -1470,5 +1589,9 @@ async function init() {
 }
 init();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
+
+<script type="module" src="gif-export.js"></script>
 </body>
 </html>
