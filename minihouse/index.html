@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>QQ家园</title>
+<title>QQ Home 2005</title>
 <style>
 
 @font-face { font-family: 'WQY12'; src: url('./font.ttf') format('truetype'); } html, body, button, input, select, textarea, div, span, td, a { font-family: 'WQY12' !important; font-size: 12px !important; line-height: 12px !important; font-weight: normal; font-style: normal; -webkit-font-smoothing: none; -moz-osx-font-smoothing: unset; text-rendering: geometricPrecision; }
@@ -230,6 +230,8 @@
 .shop-item-card .thumb-wrap img {
   max-width: 84px;
   max-height: 84px;
+    object-fit: contain;
+
 }
 
 /* change bar buttons */
@@ -288,13 +290,21 @@
 
 /* Language toggle */
 #langToggle {
+  
   font-size: 11px;
   cursor: pointer;
   color: #996633;
-  background: #ffe0c0;
+  background: #ffe0a0;
   border: 1px solid #cca080;
+  vertical-align: middle;
+
   padding: 1px 8px;
   margin-left: 10px;
+    margin-right: 3px;
+
+}
+#langToggle:hover {
+  background: #ffd0a8;
 }
 
 .upload-plan-btn {
@@ -317,6 +327,29 @@
 }
 .upload-plan-btn:hover {
   background: #ffd0a8;
+}
+
+.upload-item-btn {
+margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffe0c0;
+  border: 1px solid #cca080;
+  border-radius: 6px;
+  color: #996633;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 1px 10px;
+  box-sizing: border-box;
+  vertical-align: middle;
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 1;
+  height: 20px;
+}
+.upload-item-btn:hover {
+  background: #d0d0d0;
 }
 </style>
 </head>
@@ -361,10 +394,13 @@
             <!-- ═══ Game bar: upload + language ═══ -->
             <table width="616" border="0" cellspacing="0" cellpadding="0" class="gamebar">
               <tr>
-                <td height="27" align="left" style="padding-left:8px;">
+<td height="27" align="left" style="padding-left:8px; display:flex; align-items:center; position:relative;">
                   <input type="file" id="uploadJsonInput" accept=".json" style="display:none;" onchange="handleUploadJson(this)">
+                  <input type="file" id="uploadItemInput" accept=".gif,.png,.jpg,.jpeg,.webp,.bmp" style="display:none;" onchange="handleUploadItem(this)">
                   <button class="upload-plan-btn" onclick="document.getElementById('uploadJsonInput').click()" data-i18n="upload_plan">上传设计方案</button>
-                  <button id="langToggle" onclick="toggleLang()">CN / EN</button>
+                  <button class="upload-item-btn" onclick="document.getElementById('uploadItemInput').click()" data-i18n="upload_item">上传物品</button>
+                  <span id="planNameDisplay" style="position:absolute;left:50%;transform:translateX(-50%);color:#996633;font-weight:bold;font-size:10px;text-shadow:1px 1px 2px rgba(0,0,0,0.2);white-space:nowrap;pointer-events:none;"></span>
+<button id="langToggle" onclick="toggleLang()" style="margin-left:auto;">CN / EN</button>
                 </td>
               </tr>
             </table>
@@ -387,10 +423,9 @@
               <tr>
                 <td width="503" height="27" align="left" valign="middle" class="change">
                   <button class="change-btn" onclick="doNewCanvas()" data-i18n="new">新建</button>
-                  <button class="change-btn" onclick="doDeleteSave()" data-i18n="delete">删除</button>
                   <button class="change-btn" onclick="doRenameSave()" data-i18n="rename">重命名</button>
                   <button class="change-btn" onclick="doResetCanvas()" data-i18n="reset">原始状态</button>
-                  <button class="change-btn danger" onclick="doSetDefault()" data-i18n="set_default">设为默认方案</button>
+                  <button class="change-btn" onclick="doUndo()" data-i18n="undo_edit">撤销编辑</button>
                 </td>
                 <td width="113" valign="middle" align="right">
                   <img class="lang-btn-cn"
@@ -467,10 +502,11 @@
                 <span data-i18n="tip1">• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间</span><br>
                 <span data-i18n="tip2">• 左键点击物品拾起，再次点击放下；手机触摸即可拖拽</span><br>
                 <span data-i18n="tip3">• 右键点击物品打开菜单(镜像/层级/复制/删除)；手机触摸自动弹出菜单</span><br>
-                <span data-i18n="tip4">• 鼠标悬停物品时显示粉色边框</span><br>
+                <span data-i18n="tip4">• 鼠标悬停物品时显示粉色边框；物品列表中可锁定物品防止误操作</span><br>
                 <span data-i18n="tip5">• 使用顶部导航栏浏览分类，搜索框可搜索物品</span><br>
 				<span data-i18n="tip6">• 点击"保存设计方案"下载GIF文件</span><br>
                 <span data-i18n="tip7">• 点击"JSON"下载设计方案文件，点击"上传设计方案"加载已有方案</span><br>
+                <span data-i18n="tip8">• 可上传自定义GIF/图片作为物品；Ctrl+Z撤销编辑</span><br>
               </div>
             </div>
           </td>
@@ -581,15 +617,16 @@ let lang = 'cn';
 let dragMoved = false;
 const I18N = {
   cn: {
-    design_plan:'设计方案', upload_plan:'上传设计方案', new:'新建', delete:'删除', rename:'重命名', reset:'原始状态',
-    set_default:'设为默认方案', items_label:'装扮中的物品', tips_title:'操作提示',
+    design_plan:'设计方案', upload_plan:'上传设计方案', upload_item:'上传物品', new:'新建', delete:'删除', rename:'重命名', reset:'原始状态',
+    undo_edit:'撤销编辑', items_label:'装扮中的物品', tips_title:'操作提示',
     tip1:'• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间',
     tip2:'• 左键点击物品拾起，再次点击放下；手机触摸即可拖拽',
     tip3:'• 右键点击物品打开菜单(镜像/层级/复制/删除)；手机触摸自动弹出菜单',
-    tip4:'• 鼠标悬停物品时显示粉色边框',
+    tip4:'• 鼠标悬停物品时显示粉色边框；物品列表中可锁定物品防止误操作',
     tip5:'• 使用顶部导航栏浏览分类，搜索框可搜索物品',
 	tip6:'• 点击"保存设计方案"下载GIF文件',
     tip7:'• 点击"JSON"下载设计方案文件，点击"上传设计方案"加载已有方案',
+    tip8:'• 可上传自定义GIF/图片作为物品；Ctrl+Z撤销编辑',
     ctx_mirror:'镜像翻转', ctx_toTop:'置于顶层', ctx_toBottom:'置于底层',
     ctx_layerUp:'上移一层', ctx_layerDown:'下移一层', ctx_copy:'复制', ctx_delete:'删除',
     cancel_btn:'取消', ok_btn:'确定',
@@ -603,15 +640,16 @@ const I18N = {
     no_items:'没有找到物品', all:'全部',
   },
   en: {
-    design_plan:'Design Plan', upload_plan:'Upload Design Plan', new:'New', delete:'Delete', rename:'Rename', reset:'Reset',
-    set_default:'Set Default', items_label:'Items in Room', tips_title:'Tips',
+    design_plan:'Design Plan', upload_plan:'Upload Design Plan', upload_item:'Upload Item', new:'New', delete:'Delete', rename:'Rename', reset:'Reset',
+    undo_edit:'Undo Edit', items_label:'Items in Room', tips_title:'Tips',
     tip1:'• Click item images or "Add" button in the shop to add to room',
     tip2:'• Left-click to pick up item, click again to place; on phone: touch to drag',
     tip3:'• Right-click for menu (Mirror/Layer/Copy/Delete); on phone: touch shows menu',
-    tip4:'• Hover over items to see pink highlight',
+    tip4:'• Hover over items to see pink highlight; lock items in the list to prevent editing',
     tip5:'• Browse categories in top nav, or use search bar',
 	tip6:'• Click "Save" to download GIF',
-    tip7:'• Click "Save" to download JSON plan file; click "Upload Design Plan" to load one',
+    tip7:'• Click "JSON" to download plan file; click "Upload Design Plan" to load one',
+    tip8:'• Upload custom GIF/images as items; Ctrl+Z to undo edits',
     ctx_mirror:'Mirror', ctx_toTop:'To Top', ctx_toBottom:'To Bottom',
     ctx_layerUp:'Layer Up', ctx_layerDown:'Layer Down', ctx_copy:'Copy', ctx_delete:'Delete',
     cancel_btn:'Cancel', ok_btn:'OK',
@@ -1014,7 +1052,7 @@ function renderShop() {
                   <table width="84" border="0" cellspacing="0" cellpadding="0" class="T05">
                     <tr><td>
                       <a style="cursor:pointer;" onclick="addItemToRoom(allItems.find(i=>i.id==='${item.id}'))">
-                        <img src="${getThumbSrc(item)}" width="84" height="84" border="0" style="object-fit:contain;">
+                        <img src="${getThumbSrc(item)}" style="object-fit:contain;" width="84" height="84" border="0">
                       </a>
                     </td></tr>
                   </table>
@@ -1096,6 +1134,7 @@ function addItemToRoom(item) {
 }
 
 function pushItem(item, w, h) {
+  pushUndoState();
   const uid = nextUid++;
   const z = nextZ++;
   roomItems.push({
@@ -1123,9 +1162,12 @@ function renderCanvas() {
     div.style.zIndex = ri.z;
     div.dataset.uid = ri.uid;
 
-    // When locked from item list, disable pointer events on other items
-    // so the selected item underneath can receive clicks/drags
+    // When list-locked, disable pointer events on other items
     if (listLocked && focusUid !== null && ri.uid !== focusUid) {
+      div.style.pointerEvents = 'none';
+    }
+    // Per-item lock: no interaction at all
+    if (ri.locked) {
       div.style.pointerEvents = 'none';
     }
 
@@ -1157,7 +1199,7 @@ function onItemMouseDown(e) {
 
   if (!ri) return;
 
-  // If focus is locked from item list and this is a different item, ignore
+  // If list-locked and clicking a different item, ignore
   if (listLocked && focusUid !== null && uid !== focusUid) {
     return;
   }
@@ -1196,6 +1238,7 @@ function onItemMouseDown(e) {
   }
 
   // ===== START DRAG =====
+  pushUndoState();
   dragState = {
     uid,
     startX: e.clientX,
@@ -1275,10 +1318,14 @@ document.addEventListener('pointerup', () => {
 
   if (!dragState) return;
 
+  // Always clear list lock when any pointer interaction ends
+  listLocked = false;
+
   // ===== PHONE =====
   if (dragState.pointerType === 'touch') {
 
     dragState = null;
+    renderCanvas();
     return;
 
   }
@@ -1289,7 +1336,6 @@ document.addEventListener('pointerup', () => {
     if (dragState.wasSelected) {
 
       focusUid = null;
-      listLocked = false;
 
     } else {
 
@@ -1300,6 +1346,9 @@ document.addEventListener('pointerup', () => {
     renderCanvas();
     renderItemList();
 
+  } else {
+    // Drag ended — re-render to restore pointer-events
+    renderCanvas();
   }
 
   dragState = null;
@@ -1367,6 +1416,7 @@ document.addEventListener('mousedown', (e) => {
 function ctxAction(action) {
   const ri = roomItems.find(r => r.uid === focusUid);
   if (!ri) { hideCtxMenu(); return; }
+  pushUndoState();
 
   switch(action) {
     case 'mirror':
@@ -1452,18 +1502,38 @@ function renderItemList() {
   tbody.innerHTML = '';
   const sorted = [...roomItems].sort((a,b) => b.z - a.z);
   sorted.forEach(ri => {
+    if (!ri.hasOwnProperty('locked')) ri.locked = false;
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
+    const lockColor = ri.locked ? '#cc6600' : '#cccccc';
+    const lockBody = ri.locked
+      ? '<rect x="3" y="5" width="8" height="7" rx="1" fill="#cc6600"/><path d="M5,5 V3 a2,2 0 0,1 4,0 V5" fill="none" stroke="#cc6600" stroke-width="1.5"/>'
+      : '<rect x="3" y="5" width="8" height="7" rx="1" fill="#cccccc"/><path d="M5,5 V3 a2,2 0 0,1 4,0 V4" fill="none" stroke="#cccccc" stroke-width="1.5" transform="translate(1,-1) rotate(15,7,3)"/>';
     tr.innerHTML = `
       <td width="20" align="center"><input type="checkbox" class="itemChk" data-uid="${ri.uid}"></td>
       <td><div class="itemListNameDiv ${ri.uid === focusUid ? 'clsFocusItemList' : ''}"
-               onclick="focusItem(${ri.uid})">${ri.name}</div></td>`;
+               onclick="focusItem(${ri.uid})">${ri.name}</div></td>
+      <td width="18" align="center">
+        <svg width="14" height="14" viewBox="0 0 14 14" style="cursor:pointer;vertical-align:middle;" onclick="toggleItemLock(${ri.uid})">
+          ${lockBody}
+        </svg>
+      </td>`;
     tbody.appendChild(tr);
   });
   document.getElementById('bChkAll').checked = false;
 }
 
-let listLocked = false; // when selected from item list, lock focus
+function toggleItemLock(uid) {
+  const ri = roomItems.find(r => r.uid === uid);
+  if (!ri) return;
+  ri.locked = !ri.locked;
+  if (ri.locked && focusUid === uid) focusUid = null;
+  pushUndoState();
+  renderCanvas();
+  renderItemList();
+}
+
+let listLocked = false;
 
 function focusItem(uid) {
   focusUid = uid;
@@ -1481,6 +1551,7 @@ function getCheckedUids() {
 }
 
 function ciRemoveItem() {
+  pushUndoState();
   const uids = getCheckedUids();
   if (uids.length === 0 && focusUid) {
     roomItems = roomItems.filter(r => r.uid !== focusUid);
@@ -1493,12 +1564,31 @@ function ciRemoveItem() {
   renderItemList();
 }
 
+function simpleLayerUp(ri) {
+  const sorted = [...roomItems].sort((a,b) => a.z - b.z);
+  const idx = sorted.findIndex(r => r.uid === ri.uid);
+  if (idx < sorted.length - 1) {
+    const tgt = sorted[idx + 1];
+    const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+  }
+}
+
+function simpleLayerDown(ri) {
+  const sorted = [...roomItems].sort((a,b) => a.z - b.z);
+  const idx = sorted.findIndex(r => r.uid === ri.uid);
+  if (idx > 0) {
+    const tgt = sorted[idx - 1];
+    const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+  }
+}
+
 function ciItemMoveZ(bUp) {
+  pushUndoState();
   const uids = getCheckedUids();
   const targets = uids.length > 0 ? uids : (focusUid ? [focusUid] : []);
   targets.forEach(uid => {
     const ri = roomItems.find(r => r.uid === uid);
-    if (ri) bUp ? doLayerUp(ri) : doLayerDown(ri);
+    if (ri) bUp ? simpleLayerUp(ri) : simpleLayerDown(ri);
   });
   renderCanvas();
   renderItemList();
@@ -1542,6 +1632,7 @@ async function doSave() {
     if (!name) return;
     const saveData = { items: roomItems.map(ri => ({ ...ri })), timestamp: Date.now() };
     currentSaveName = name;
+    updatePlanNameDisplay();
     // Download as JSON file
     const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -1568,8 +1659,15 @@ function handleUploadJson(input) {
       roomItems = data.items.map(it => ({ ...it }));
       nextUid = Math.max(1, ...roomItems.map(r => r.uid)) + 1;
       nextZ = Math.max(1, ...roomItems.map(r => r.z)) + 1;
+      // Count existing user items to continue numbering
+      userItemCount = 0;
+      roomItems.forEach(ri => {
+        const m = ri.name.match(/^User Item (\d+)$/);
+        if (m) userItemCount = Math.max(userItemCount, parseInt(m[1]));
+      });
       focusUid = null;
       currentSaveName = file.name.replace(/\.json$/i, '');
+      updatePlanNameDisplay();
       renderCanvas();
       renderItemList();
     } catch (err) {
@@ -1577,7 +1675,48 @@ function handleUploadJson(input) {
     }
   };
   reader.readAsText(file);
-  // Reset input so same file can be re-uploaded
+  input.value = '';
+}
+
+// ── Upload custom item (GIF/PNG/JPG) as base64 ──
+let userItemCount = 0;
+
+function handleUploadItem(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result; // base64 data URL
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight;
+      // Clamp if oversized
+      if (w > CW * 0.7) { const s = (CW * 0.7) / w; w *= s; h *= s; }
+      if (h > CH * 0.7) { const s = (CH * 0.7) / h; w *= s; h *= s; }
+      w = Math.round(w); h = Math.round(h);
+
+      userItemCount++;
+      const name = 'User Item ' + String(userItemCount).padStart(3, '0');
+      pushUndoState();
+      const uid = nextUid++;
+      const z = nextZ++;
+      roomItems.push({
+        uid, name, src: dataUrl,
+        x: Math.round((CW - w) / 2),
+        y: Math.round((CH - h) / 2),
+        z, w, h, mirrored: false,
+        isUserItem: true
+      });
+      focusUid = uid;
+      renderCanvas();
+      renderItemList();
+    };
+    img.onerror = () => {
+      alert(lang === 'cn' ? '无法加载图片' : 'Failed to load image');
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
   input.value = '';
 }
 
@@ -1586,6 +1725,7 @@ function doNewCanvas() {
     if (!name) return;
     roomItems = []; nextUid = 1; nextZ = 1; focusUid = null;
     currentSaveName = name;
+    updatePlanNameDisplay();
     renderCanvas();
     renderItemList();
   });
@@ -1602,9 +1742,15 @@ function doDeleteSave() {
 
 function doRenameSave() {
   showModal(t('rename_title'), t('rename_prompt'), true, currentSaveName || '', newName => {
-    if (!newName) return;
+
     currentSaveName = newName;
+    updatePlanNameDisplay();
   });
+}
+
+function updatePlanNameDisplay() {
+  const el = document.getElementById('planNameDisplay');
+  if (el) el.textContent = currentSaveName || '';
 }
 
 function doResetCanvas() {
@@ -1615,18 +1761,36 @@ function doResetCanvas() {
   });
 }
 
-function doSetDefault() {
-  if (currentSaveName) {
-    localStorage.setItem(DEFAULT_KEY, currentSaveName);
-    showModal(t('default_title'), t('default_done'), false, '', ()=>{});
-  } else {
-    showModal(t('default_title'), t('default_unsaved'), true, '', name => {
-      if (!name) return;
-      localStorage.setItem(DEFAULT_KEY, name);
-      currentSaveName = name;
-    });
-  }
+// ═══════════════════════════════════════════════════
+// UNDO SYSTEM
+// ═══════════════════════════════════════════════════
+const undoStack = [];
+const MAX_UNDO = 50;
+
+function pushUndoState() {
+  undoStack.push(JSON.stringify(roomItems.map(ri => ({...ri}))));
+  if (undoStack.length > MAX_UNDO) undoStack.shift();
 }
+
+function doUndo() {
+  if (undoStack.length === 0) return;
+  const prev = JSON.parse(undoStack.pop());
+  roomItems = prev;
+  nextUid = Math.max(1, ...roomItems.map(r => r.uid)) + 1;
+  nextZ = Math.max(1, ...roomItems.map(r => r.z)) + 1;
+  focusUid = null;
+  listLocked = false;
+  renderCanvas();
+  renderItemList();
+}
+
+// Ctrl+Z
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    e.preventDefault();
+    doUndo();
+  }
+});
 
 // ═══════════════════════════════════════════════════
 // INIT
