@@ -230,6 +230,8 @@
 .shop-item-card .thumb-wrap img {
   max-width: 84px;
   max-height: 84px;
+    object-fit: contain;
+
 }
 
 /* change bar buttons */
@@ -1047,7 +1049,7 @@ function renderShop() {
                   <table width="84" border="0" cellspacing="0" cellpadding="0" class="T05">
                     <tr><td>
                       <a style="cursor:pointer;" onclick="addItemToRoom(allItems.find(i=>i.id==='${item.id}'))">
-                        <img src="${getThumbSrc(item)}" width="84" height="84" border="0">
+                        <img src="${getThumbSrc(item)}" style="object-fit:contain;" width="84" height="84" border="0">
                       </a>
                     </td></tr>
                   </table>
