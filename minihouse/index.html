@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>QQ Home 2005</title>
+<title>QQHome 2005</title>
 <style>
 
 @font-face { font-family: 'WQY12'; src: url('./font.ttf') format('truetype'); } html, body, button, input, select, textarea, div, span, td, a { font-family: 'WQY12' !important; font-size: 12px !important; line-height: 12px !important; font-weight: normal; font-style: normal; -webkit-font-smoothing: none; -moz-osx-font-smoothing: unset; text-rendering: geometricPrecision; }
@@ -157,6 +157,86 @@
   background: #d0d0d0;
 }
 
+/* Item list rows */
+.il-item-row {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 2px;
+  cursor: pointer;
+  user-select: none;
+}
+.il-item-row:hover { background: #e8e0f0; }
+.il-item-row.drag-over-top { border-top: 2px solid #ff69b4; }
+.il-item-row.drag-over-bot { border-bottom: 2px solid #ff69b4; }
+.il-item-row.shift-selected { background: #d8d0f0; }
+
+/* Group rows */
+.il-group-row {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 2px;
+  background: #f5edd8;
+  cursor: pointer;
+  user-select: none;
+  font-weight: bold;
+}
+.il-group-row:hover { background: #ede0c8; }
+.il-group-row.drag-over-top { border-top: 2px solid #ff8c42; }
+.il-group-row.drag-over-bot { border-bottom: 2px solid #ff8c42; }
+.il-group-row.group-selected { background: #e6d6b0; }
+.il-group-row.group-selected:hover { background: #ddc9a0; }
+.il-group-row.drag-hover-collapsed { background: #ffd9a8; outline: 2px dashed #ff8c42; outline-offset: -2px; }
+.il-group-row.non-contiguous .il-group-name { color: #993300; font-style: italic; }
+.il-warn-icon {
+  flex-shrink: 0;
+  cursor: pointer;
+  color: #cc3300;
+  font-size: 11px;
+  margin: 0 2px 0 0;
+  user-select: none;
+}
+.il-warn-icon:hover { color: #ff3300; }
+
+/* Fixed widths for sidebar panels — prevents English text from
+   stretching the layout out of alignment. The HTML width="..." attrs
+   are only hints; these CSS rules are the hard cap. */
+#divItemList,
+#pRoomItemList {
+  width: 184px;
+  max-width: 184px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+#tipsContent {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+}
+/* Make sure item list rows themselves stay clipped */
+.il-item-row, .il-group-row {
+  max-width: 94%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.il-group-children { padding-left: 10px; }
+.il-group-children.collapsed { display: none; }
+
+.il-icon { flex-shrink: 0; cursor: pointer; vertical-align: middle; }
+.il-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 3px;
+  font-size: 12px;
+}
+
 /* Context menu */
 #ctxMenu {
   display: none;
@@ -287,6 +367,62 @@
   font-family: inherit;
 }
 .modal-btns button:hover { background: #FFCC88; }
+
+/* About modal — same retro style, centered content, bigger title */
+#aboutOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 100001;
+  align-items: center;
+  justify-content: center;
+}
+#aboutOverlay.visible { display: flex; }
+#aboutBox {
+  background: #FFF8F2;
+  border: 2px solid #D4915A;
+  padding: 24px 28px;
+  min-width: 360px;
+  max-width: 460px;
+  box-shadow: 3px 3px 15px rgba(0,0,0,0.2);
+  font-size: 12px;
+  text-align: center;
+}
+#aboutBox h2 {
+  margin: 0 0 14px;
+  color: #993300;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+#aboutBox .about-body {
+  color: #663300;
+  line-height: 1.7;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+#aboutBox .about-body p { margin: 0 0 8px; }
+#aboutBox .about-btns { text-align: center; }
+#aboutBox .about-btns button {
+  padding: 4px 22px;
+  border: 1px solid #cca080;
+  background: #FFE8D0;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+}
+#aboutBox .about-btns button:hover { background: #FFCC88; }
+
+#aboutFooterLink {
+  display: block;
+  text-align: center;
+  margin: 12px 0 18px;
+  color: #996633;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+#aboutFooterLink:hover { color: #cc6600; }
 
 /* Language toggle */
 #langToggle {
@@ -471,10 +607,8 @@ margin-left: 8px;
                   <table width="184" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td height="174">
-                        <div class="clsStyleScroll" id="divItemList" style="padding-top:5px;height:160px;">
-                          <table style="table-layout:fixed;" cellspacing="0" cellpadding="0" width="100%" border="0">
-                            <tbody id="pRoomItemList"></tbody>
-                          </table>
+                        <div class="clsStyleScroll" id="divItemList" style="padding-top:2px;height:160px;">
+                          <div id="pRoomItemList"></div>
                         </div>
                       </td>
                     </tr>
@@ -502,11 +636,14 @@ margin-left: 8px;
                 <span data-i18n="tip1">• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间</span><br>
                 <span data-i18n="tip2">• 左键点击物品拾起，再次点击放下；手机触摸即可拖拽</span><br>
                 <span data-i18n="tip3">• 右键点击物品打开菜单(镜像/层级/复制/删除)；手机触摸自动弹出菜单</span><br>
-                <span data-i18n="tip4">• 鼠标悬停物品时显示粉色边框；物品列表中可锁定物品防止误操作</span><br>
+                <span data-i18n="tip4">• 鼠标悬停物品时显示粉色边框；物品列表中可锁定/隐藏物品</span><br>
                 <span data-i18n="tip5">• 使用顶部导航栏浏览分类，搜索框可搜索物品</span><br>
 				<span data-i18n="tip6">• 点击"保存设计方案"下载GIF文件</span><br>
-                <span data-i18n="tip7">• 点击"JSON"下载设计方案文件，点击"上传设计方案"加载已有方案</span><br>
+                <span data-i18n="tip7">• 点击"JSON"下载方案文件(含分组信息)，点击"上传设计方案"加载</span><br>
                 <span data-i18n="tip8">• 可上传自定义GIF/图片作为物品；Ctrl+Z撤销编辑</span><br>
+                <span data-i18n="tip9">• Ctrl+G编组；单击组名展开/折叠并选中；双击组名重命名；Shift+点击多选</span><br>
+                <span data-i18n="tip10">• 物品列表支持拖拽排序；连续层级的组会折叠在原位显示</span><br>
+                <span data-i18n="tip11">• 选中组标题时按删除键将解散该组(不删除物品)</span><br>
               </div>
             </div>
           </td>
@@ -609,6 +746,27 @@ margin-left: 8px;
   </div>
 </div>
 
+<!-- About modal -->
+<div id="aboutOverlay" onclick="if(event.target===this)hideAbout()">
+  <div id="aboutBox">
+    <h2 data-i18n="about_title">About This Project</h2>
+    <div class="about-body">
+      <p data-i18n="about_p1">A faithful re-creation of the classic QQ Home (QQ家园) room-decorating experience with modern revisions.</p>
+      <p data-i18n="about_p2">All original artwork and sound belong to Tencent Holdings Limited; this project is a fan-made tribute, built for nostalgia and personal use. Please contact for takedown request.</p>
+      <p data-i18n="about_p3">Drag items in, arrange them on the canvas, group them, and export your design as a GIF or JSON.</p>
+	        <p data-i18n="about_p4"><a style="color:#996633;" href="https://www.instagram.com/kenychan_"> Author: Keny Chan</a></p>
+		<p data-i18n="about_p5"><a style="color:#996633" href="https://kenychan.com">kenychan.com</a> </p>
+
+
+    </div>
+    <div class="about-btns">
+      <button onclick="hideAbout()" data-i18n="ok_btn">确定</button>
+    </div>
+  </div>
+</div>
+
+<a id="aboutFooterLink" onclick="showAbout()" data-i18n="about_link">关于本项目</a>
+
 <script>
 // ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION
@@ -622,11 +780,18 @@ const I18N = {
     tip1:'• 在右侧商店中点击物品图片或"添加"按钮添加物品到房间',
     tip2:'• 左键点击物品拾起，再次点击放下；手机触摸即可拖拽',
     tip3:'• 右键点击物品打开菜单(镜像/层级/复制/删除)；手机触摸自动弹出菜单',
-    tip4:'• 鼠标悬停物品时显示粉色边框；物品列表中可锁定物品防止误操作',
+    tip4:'• 鼠标悬停物品时显示粉色边框；物品列表中可锁定/隐藏物品',
     tip5:'• 使用顶部导航栏浏览分类，搜索框可搜索物品',
 	tip6:'• 点击"保存设计方案"下载GIF文件',
-    tip7:'• 点击"JSON"下载设计方案文件，点击"上传设计方案"加载已有方案',
+    tip7:'• 点击"JSON"下载方案文件(含分组信息)，点击"上传设计方案"加载',
     tip8:'• 可上传自定义GIF/图片作为物品；Ctrl+Z撤销编辑',
+    tip9:'• Shift+点击多选；Ctrl+G将所选物品编组；单击组名展开/折叠并选中；双击组名重命名',
+    tip10:'• 物品列表支持拖拽排序；连续层级的组会折叠在原位显示',
+    tip11:'• 选中组标题时按删除键将解散该组(不删除物品)',
+    warn_title:'提示',
+    warn_already_grouped:'部分选中物品已属于某个组，无法重复编组。请先解散原组。',
+    warn_noncontig_reorder:'此组为非连续组（成员层级不相邻），无法整体重排。',
+    warn_became_noncontig:'拖入的物品层级不相邻，此组已变为非连续组并移至列表底部。',
     ctx_mirror:'镜像翻转', ctx_toTop:'置于顶层', ctx_toBottom:'置于底层',
     ctx_layerUp:'上移一层', ctx_layerDown:'下移一层', ctx_copy:'复制', ctx_delete:'删除',
     cancel_btn:'取消', ok_btn:'确定',
@@ -638,6 +803,12 @@ const I18N = {
     default_title:'设为默认方案', default_unsaved:'当前未保存，请先输入名称:',
     default_done:'已设为默认方案！', no_plan:'未加载任何方案', add_btn:'添加',
     no_items:'没有找到物品', all:'全部',
+    about_link:'关于本项目',
+    about_title:'关于本项目',
+    about_p1:'经典 QQ 家园房间装饰体验的忠实重现，并加入了现代化改良',
+    about_p2:'有原始美术与音效版权均归腾讯控股有限公司所有；本项目为粉丝自制的致敬作品，仅用于怀旧与个人使用。如有侵权问题，请联系下架。',
+    about_p3:'拖入物品、在画布上自由排列、按需编组，并可导出为 GIF 或 JSON。',
+	
   },
   en: {
     design_plan:'Design Plan', upload_plan:'Upload Design Plan', upload_item:'Upload Item', new:'New', delete:'Delete', rename:'Rename', reset:'Reset',
@@ -645,11 +816,18 @@ const I18N = {
     tip1:'• Click item images or "Add" button in the shop to add to room',
     tip2:'• Left-click to pick up item, click again to place; on phone: touch to drag',
     tip3:'• Right-click for menu (Mirror/Layer/Copy/Delete); on phone: touch shows menu',
-    tip4:'• Hover over items to see pink highlight; lock items in the list to prevent editing',
+    tip4:'• Hover over items to see pink highlight; lock/hide items in the list panel',
     tip5:'• Browse categories in top nav, or use search bar',
 	tip6:'• Click "Save" to download GIF',
-    tip7:'• Click "JSON" to download plan file; click "Upload Design Plan" to load one',
+    tip7:'• Click "JSON" to download plan file (includes groups); "Upload Design Plan" to load',
     tip8:'• Upload custom GIF/images as items; Ctrl+Z to undo edits',
+    tip9:'• Shift+click for multi-select; then Ctrl+G to group; click group name to fold/unfold & select; double-click to rename',
+    tip10:'• Drag items in the list to reorder; contiguous groups fold in-place',
+    tip11:'• With a group title selected, pressing Delete will ungroup it (items kept)',
+    warn_title:'Notice',
+    warn_already_grouped:'Some selected items already belong to a group. Ungroup them first before re-grouping.',
+    warn_noncontig_reorder:'This group is non-contiguous (members are not adjacent in z-order) and cannot be reordered as a whole.',
+    warn_became_noncontig:'The dropped item is not adjacent in z-order — this group is now non-contiguous and has been moved to the bottom of the list.',
     ctx_mirror:'Mirror', ctx_toTop:'To Top', ctx_toBottom:'To Bottom',
     ctx_layerUp:'Layer Up', ctx_layerDown:'Layer Down', ctx_copy:'Copy', ctx_delete:'Delete',
     cancel_btn:'Cancel', ok_btn:'OK',
@@ -661,6 +839,11 @@ const I18N = {
     default_title:'Set Default', default_unsaved:'Not saved yet. Enter a name:',
     default_done:'Set as default!', no_plan:'No plan loaded', add_btn:'Add',
     no_items:'No items found', all:'All',
+    about_link:'About This Project',
+    about_title:'About This Project',
+    about_p1:'A faithful re-creation of the classic QQ Home (QQ家园) room-decorating experience with modern revisions.',
+    about_p2:'All original artwork and sound belong to Tencent Holdings Limited; this project is a fan-made tribute, built for nostalgia and personal use. Please contact for takedown request.',
+    about_p3:'Drag items in, arrange them on the canvas, group them, and export your design as a GIF or JSON.',
   }
 };
 function t(k) { return I18N[lang][k] || k; }
@@ -1111,7 +1294,8 @@ let roomItems = [];
 let nextUid = 1;
 let nextZ = 1;
 let focusUid = null;  // currently selected/focused item
-let dragState = null; // {uid, startX, startY, origX, origY}
+let focusGroupId = null; // currently selected group (all members move together)
+let dragState = null; // {uid, startX, startY, origX, origY, groupOffsets}
 
 const CW = 616, CH = 389;
 
@@ -1138,7 +1322,11 @@ function pushItem(item, w, h) {
   const uid = nextUid++;
   const z = nextZ++;
   roomItems.push({
-    uid, name: item.name, src: getFullSrc(item),
+    uid,
+    name: item.name,
+    name_cn: item.name_cn || item.name,
+    name_en: item.name_en || item.name_cn || item.name,
+    src: getFullSrc(item),
     x: Math.round((CW - w) / 2), y: Math.round((CH - h) / 2),
     z, w, h, mirrored: false
   });
@@ -1154,17 +1342,30 @@ function renderCanvas() {
 
   const sorted = [...roomItems].sort((a, b) => a.z - b.z);
   sorted.forEach(ri => {
+    // Skip hidden items
+    if (ri.visible === false) return;
+
+    const isGroupSelected = focusGroupId && getItemGroup(ri.uid)?.gid === focusGroupId;
+    const isShiftSelected = shiftSelectedUids.has(ri.uid);
     const div = document.createElement('div');
     div.className = 'room-item-div' + (ri.mirrored ? ' mirrored' : '') +
-                    (ri.uid === focusUid ? ' selected' : '');
+                    ((ri.uid === focusUid || isGroupSelected || isShiftSelected) ? ' selected' : '');
     div.style.left = ri.x + 'px';
     div.style.top = ri.y + 'px';
     div.style.zIndex = ri.z;
     div.dataset.uid = ri.uid;
 
     // When list-locked, disable pointer events on other items
-    if (listLocked && focusUid !== null && ri.uid !== focusUid) {
+    // (but shift-selected items remain interactive so they can drag together)
+    if (listLocked && focusUid !== null && ri.uid !== focusUid && !isShiftSelected) {
       div.style.pointerEvents = 'none';
+    }
+    // When group is selected, only group members are interactive
+    if (focusGroupId) {
+      const g = groups.find(gr => gr.gid === focusGroupId);
+      if (g && !g.itemUids.includes(ri.uid)) {
+        div.style.pointerEvents = 'none';
+      }
     }
     // Per-item lock: no interaction at all
     if (ri.locked) {
@@ -1199,8 +1400,9 @@ function onItemMouseDown(e) {
 
   if (!ri) return;
 
-  // If list-locked and clicking a different item, ignore
-  if (listLocked && focusUid !== null && uid !== focusUid) {
+  // If list-locked and clicking a different item, ignore — unless the
+  // clicked item is part of the active shift-selection (so multi-drag works).
+  if (listLocked && focusUid !== null && uid !== focusUid && !shiftSelectedUids.has(uid)) {
     return;
   }
 
@@ -1209,16 +1411,51 @@ function onItemMouseDown(e) {
 
   hideCtxMenu();
 
+  // ===== SHIFT+CLICK MULTI-SELECT (PC mouse only, primary button) =====
+  // This must run before the normal click/drag logic so a held Shift
+  // doesn't begin a drag. Right-click and touch fall through.
+  if (
+    e.pointerType === 'mouse' &&
+    e.button === 0 &&
+    e.shiftKey
+  ) {
+    // Seed the set with the current focus if it isn't already there,
+    // so the first shift-click "captures" the previously-focused item.
+    if (shiftSelectedUids.size === 0 && focusUid != null && focusUid !== uid) {
+      shiftSelectedUids.add(focusUid);
+    }
+    // Toggle the clicked uid
+    if (shiftSelectedUids.has(uid)) {
+      shiftSelectedUids.delete(uid);
+    } else {
+      shiftSelectedUids.add(uid);
+    }
+    // Keep focusUid pointing at the most recently shift-clicked item so the
+    // visual highlight and right-click drop-down anchor make sense.
+    focusUid = uid;
+    focusGroupId = null;
+    // Don't enter dragState — release without further effects
+    renderCanvas();
+    renderItemList();
+    return;
+  }
+
   // ===== RIGHT CLICK (PC) =====
   if (
     e.pointerType === 'mouse' &&
     e.button === 2
   ) {
 
+    // If right-clicking inside the active shift-selection, keep that selection
+    // so the context menu acts on all selected items.
+    if (!shiftSelectedUids.has(uid)) {
+      shiftSelectedUids.clear();
+    }
     focusUid = uid;
 
     renderCanvas();
     renderItemList();
+    scrollItemListToUid(uid);
 
     showCtxMenu(ri);
 
@@ -1228,10 +1465,14 @@ function onItemMouseDown(e) {
   // ===== TOUCH (PHONE) =====
   if (e.pointerType === 'touch') {
 
+    if (!shiftSelectedUids.has(uid)) {
+      shiftSelectedUids.clear();
+    }
     focusUid = uid;
 
     renderCanvas();
     renderItemList();
+    scrollItemListToUid(uid);
 
     showCtxMenu(ri);
 
@@ -1239,6 +1480,24 @@ function onItemMouseDown(e) {
 
   // ===== START DRAG =====
   pushUndoState();
+
+  // If this item is in the focused group, build offsets for all members.
+  // OR: if this item is part of an active shift-selection, build offsets
+  // for every shift-selected item so they all drag together (issue 1).
+  let groupOffsets = null;
+  const itemGroup = getItemGroup(uid);
+  if (focusGroupId && itemGroup && itemGroup.gid === focusGroupId) {
+    groupOffsets = itemGroup.itemUids.map(memberUid => {
+      const member = roomItems.find(r => r.uid === memberUid);
+      return member ? { uid: memberUid, origX: member.x, origY: member.y } : null;
+    }).filter(Boolean);
+  } else if (shiftSelectedUids.size > 1 && shiftSelectedUids.has(uid)) {
+    groupOffsets = [...shiftSelectedUids].map(memberUid => {
+      const member = roomItems.find(r => r.uid === memberUid);
+      return member ? { uid: memberUid, origX: member.x, origY: member.y } : null;
+    }).filter(Boolean);
+  }
+
   dragState = {
     uid,
     startX: e.clientX,
@@ -1248,7 +1507,8 @@ function onItemMouseDown(e) {
     wasSelected:
       (focusUid === uid),
     pointerType:
-      e.pointerType
+      e.pointerType,
+    groupOffsets
   };
 
   dragMoved = false;
@@ -1282,34 +1542,30 @@ document.addEventListener('pointermove', (e) => {
     dragMoved = true;
   }
 
-  ri.x = Math.max(
-    -ri.w + 10,
-    Math.min(
-      CW - 10,
-      dragState.origX + dx
-    )
-  );
+  // Move the primary item
+  ri.x = Math.max(-ri.w + 10, Math.min(CW - 10, dragState.origX + dx));
+  ri.y = Math.max(-ri.h + 10, Math.min(CH - 10, dragState.origY + dy));
 
-  ri.y = Math.max(
-    -ri.h + 10,
-    Math.min(
-      CH - 10,
-      dragState.origY + dy
-    )
-  );
-
-  const el = document.querySelector(
-    `.room-item-div[data-uid="${ri.uid}"]`
-  );
-
+  const el = document.querySelector(`.room-item-div[data-uid="${ri.uid}"]`);
   if (el) {
+    el.style.left = ri.x + 'px';
+    el.style.top = ri.y + 'px';
+  }
 
-    el.style.left =
-      ri.x + 'px';
-
-    el.style.top =
-      ri.y + 'px';
-
+  // Move all group members together
+  if (dragState.groupOffsets) {
+    dragState.groupOffsets.forEach(offset => {
+      if (offset.uid === dragState.uid) return; // already moved
+      const member = roomItems.find(r => r.uid === offset.uid);
+      if (!member) return;
+      member.x = Math.max(-member.w + 10, Math.min(CW - 10, offset.origX + dx));
+      member.y = Math.max(-member.h + 10, Math.min(CH - 10, offset.origY + dy));
+      const mel = document.querySelector(`.room-item-div[data-uid="${member.uid}"]`);
+      if (mel) {
+        mel.style.left = member.x + 'px';
+        mel.style.top = member.y + 'px';
+      }
+    });
   }
 
 });
@@ -1333,18 +1589,30 @@ document.addEventListener('pointerup', () => {
   // ===== PC CLICK =====
   if (!dragMoved) {
 
+    // If the click was on a shift-selected item, preserve the multi-selection
+    // (single click is a no-op; user clicks blank canvas to clear).
+    if (shiftSelectedUids.has(dragState.uid)) {
+      dragState = null;
+      return;
+    }
+
     if (dragState.wasSelected) {
 
       focusUid = null;
+      focusGroupId = null;
+      shiftSelectedUids.clear();
 
     } else {
 
       focusUid = dragState.uid;
+      focusGroupId = null;
+      shiftSelectedUids.clear();
 
     }
 
     renderCanvas();
     renderItemList();
+    if (focusUid !== null) scrollItemListToUid(focusUid);
 
   } else {
     // Drag ended — re-render to restore pointer-events
@@ -1369,6 +1637,8 @@ document
     ) {
 
       focusUid = null;
+      focusGroupId = null;
+      shiftSelectedUids.clear();
       listLocked = false;
 
       document
@@ -1388,21 +1658,29 @@ document
 // ═══════════════════════════════════════════════════
 function showCtxMenu(ri) {
   const menu = document.getElementById('ctxMenu');
-  // Position at right side of item
-  let mx = ri.x + ri.w + 4;
-  let my = ri.y;
-  if (mx + 100 > CW) mx = Math.max(0, ri.x - 100);
-  if (my + 180 > CH) my = Math.max(0, CH - 180);
-
   const body = document.getElementById('divAzitRoomBody');
-  menu.style.left = mx + 'px';
-  menu.style.top = my + 'px';
+
+  // Move menu into canvas container first so we can measure it
+  if (menu.parentNode !== body) body.appendChild(menu);
   menu.style.display = 'block';
   menu.style.position = 'absolute';
   menu.style.zIndex = '99999';
+  // Reset to (0,0) to get a clean measurement
+  menu.style.left = '0px';
+  menu.style.top = '0px';
 
-  // Move menu into canvas container
-  if (menu.parentNode !== body) body.appendChild(menu);
+  // Prefer right side of item, fall back to left if it would overflow.
+  const mw = menu.offsetWidth || 100;
+  const mh = menu.offsetHeight || 180;
+  let mx = ri.x + ri.w + 4;
+  let my = ri.y;
+  if (mx + mw > CW) mx = ri.x - mw - 4; // try left side
+  // Final hard clamp inside canvas
+  mx = Math.max(0, Math.min(CW - mw, mx));
+  my = Math.max(0, Math.min(CH - mh, my));
+
+  menu.style.left = mx + 'px';
+  menu.style.top = my + 'px';
 }
 
 function hideCtxMenu() {
@@ -1414,39 +1692,108 @@ document.addEventListener('mousedown', (e) => {
 });
 
 function ctxAction(action) {
-  const ri = roomItems.find(r => r.uid === focusUid);
-  if (!ri) { hideCtxMenu(); return; }
+  // Determine target set: if a shift-selection exists, act on all of them;
+  // otherwise just the focused item.
+  const targetUids = (shiftSelectedUids.size > 0)
+    ? [...shiftSelectedUids]
+    : (focusUid != null ? [focusUid] : []);
+  if (targetUids.length === 0) { hideCtxMenu(); return; }
+
+  // Resolve the actual items now (filter out any uids that no longer exist)
+  let targets = targetUids
+    .map(u => roomItems.find(r => r.uid === u))
+    .filter(Boolean);
+  if (targets.length === 0) { hideCtxMenu(); return; }
+
   pushUndoState();
 
   switch(action) {
     case 'mirror':
-      ri.mirrored = !ri.mirrored;
+      targets.forEach(ri => { ri.mirrored = !ri.mirrored; });
       break;
+
     case 'toTop': {
-      const maxZ = Math.max(...roomItems.map(r => r.z));
-      const top = roomItems.find(r => r.z === maxZ);
-      if (top && top.uid !== ri.uid) { const tmp = ri.z; ri.z = top.z; top.z = tmp; }
+      // Send all targets to the top, preserving their relative z-order.
+      // Sort by z ascending so the original-lowest goes up first, leaving
+      // the original-highest on top.
+      targets.sort((a, b) => a.z - b.z);
+      targets.forEach(ri => {
+        const maxZ = Math.max(...roomItems.map(r => r.z));
+        if (ri.z < maxZ) {
+          const oldZ = ri.z;
+          roomItems.forEach(r => { if (r.uid !== ri.uid && r.z > oldZ) r.z--; });
+          ri.z = maxZ;
+        }
+      });
       break;
     }
+
     case 'toBottom': {
-      const minZ = Math.min(...roomItems.map(r => r.z));
-      const bot = roomItems.find(r => r.z === minZ);
-      if (bot && bot.uid !== ri.uid) { const tmp = ri.z; ri.z = bot.z; bot.z = tmp; }
+      // Send all targets to the bottom, preserving their relative z-order.
+      // Sort by z descending so the original-highest goes down first, leaving
+      // the original-lowest at the very bottom.
+      targets.sort((a, b) => b.z - a.z);
+      targets.forEach(ri => {
+        const minZ = Math.min(...roomItems.map(r => r.z));
+        if (ri.z > minZ) {
+          const oldZ = ri.z;
+          roomItems.forEach(r => { if (r.uid !== ri.uid && r.z < oldZ) r.z++; });
+          ri.z = minZ;
+        }
+      });
       break;
     }
-    case 'layerUp': doLayerUp(ri); break;
-    case 'layerDown': doLayerDown(ri); break;
+
+    case 'layerUp': {
+      // Move each target up by 1. Process top-to-bottom so they don't
+      // collide with each other.
+      targets.sort((a, b) => b.z - a.z);
+      targets.forEach(ri => doLayerUp(ri));
+      break;
+    }
+
+    case 'layerDown': {
+      // Move each target down by 1. Process bottom-to-top.
+      targets.sort((a, b) => a.z - b.z);
+      targets.forEach(ri => doLayerDown(ri));
+      break;
+    }
+
     case 'copy': {
-      const uid = nextUid++;
-      const z = nextZ++;
-      roomItems.push({ ...ri, uid, z, x: ri.x + 10, y: ri.y + 10 });
-      focusUid = uid;
+      // Duplicate each target, slight offset; new items go above original.
+      // Process from highest z down so newly-inserted z's don't shift the
+      // remaining targets' z values out from under us.
+      targets.sort((a, b) => b.z - a.z);
+      const newUids = [];
+      targets.forEach(ri => {
+        const uid = nextUid++;
+        const newZ = ri.z + 1;
+        roomItems.forEach(r => { if (r.z >= newZ) r.z++; });
+        nextZ = Math.max(nextZ, newZ + 1);
+        roomItems.push({ ...ri, uid, z: newZ, x: ri.x + 10, y: ri.y + 10 });
+        newUids.push(uid);
+      });
+      // Re-select the new copies so user can continue moving them as a group
+      if (newUids.length > 1) {
+        shiftSelectedUids = new Set(newUids);
+        focusUid = newUids[0];
+      } else {
+        shiftSelectedUids.clear();
+        focusUid = newUids[0];
+      }
       break;
     }
-    case 'delete':
-      roomItems = roomItems.filter(r => r.uid !== ri.uid);
-      focusUid = null;
+
+    case 'delete': {
+      const set = new Set(targets.map(r => r.uid));
+      roomItems = roomItems.filter(r => !set.has(r.uid));
+      // Also drop from any group memberships
+      groups.forEach(g => g.itemUids = g.itemUids.filter(u => !set.has(u)));
+      groups = groups.filter(g => g.itemUids.length > 0);
+      if (set.has(focusUid)) focusUid = null;
+      shiftSelectedUids.clear();
       break;
+    }
   }
   hideCtxMenu();
   renderCanvas();
@@ -1458,69 +1805,539 @@ function rectsOverlap(a, b) {
 }
 
 function doLayerUp(ri) {
-  // Special rule: if overlapping with smaller items on higher layer, swap with nearest
+  // Smart: find nearest overlapping smaller item above
   const overlapping = roomItems.filter(o =>
     o.uid !== ri.uid && o.z > ri.z && rectsOverlap(ri, o) && o.w < 600 && o.h < 300
   );
+  let targetZ;
   if (overlapping.length > 0) {
     overlapping.sort((a,b) => a.z - b.z);
-    const tgt = overlapping[0];
-    const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+    targetZ = overlapping[0].z;
   } else {
     const sorted = [...roomItems].sort((a,b) => a.z - b.z);
     const idx = sorted.findIndex(r => r.uid === ri.uid);
-    if (idx < sorted.length - 1) {
-      const tgt = sorted[idx + 1];
-      const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
-    }
+    if (idx >= sorted.length - 1) return;
+    targetZ = sorted[idx + 1].z;
   }
+  const oldZ = ri.z;
+  // Shift all items from oldZ+1 to targetZ down by 1
+  roomItems.forEach(r => {
+    if (r.uid !== ri.uid && r.z > oldZ && r.z <= targetZ) r.z--;
+  });
+  ri.z = targetZ;
 }
 
 function doLayerDown(ri) {
   const overlapping = roomItems.filter(o =>
     o.uid !== ri.uid && o.z < ri.z && rectsOverlap(ri, o) && o.w < 600 && o.h < 300
   );
+  let targetZ;
   if (overlapping.length > 0) {
     overlapping.sort((a,b) => b.z - a.z);
-    const tgt = overlapping[0];
-    const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
+    targetZ = overlapping[0].z;
   } else {
     const sorted = [...roomItems].sort((a,b) => a.z - b.z);
     const idx = sorted.findIndex(r => r.uid === ri.uid);
-    if (idx > 0) {
-      const tgt = sorted[idx - 1];
-      const tmp = ri.z; ri.z = tgt.z; tgt.z = tmp;
-    }
+    if (idx <= 0) return;
+    targetZ = sorted[idx - 1].z;
   }
+  const oldZ = ri.z;
+  // Shift all items from targetZ to oldZ-1 up by 1
+  roomItems.forEach(r => {
+    if (r.uid !== ri.uid && r.z >= targetZ && r.z < oldZ) r.z++;
+  });
+  ri.z = targetZ;
 }
 
 // ═══════════════════════════════════════════════════
-// ITEM LIST PANEL (original pRoomItemList)
+// ITEM LIST PANEL — Groups, Visibility, Lock, Drag, Shift-Select
 // ═══════════════════════════════════════════════════
+
+let groups = []; // [{gid, name, collapsed, visible, locked, itemUids:[]}]
+let nextGid = 1;
+let lastClickedUid = null; // for shift-select range
+
+// SVG icon builders
+function eyeSVG(visible) {
+  if (visible === false) return `<svg class="il-icon" width="14" height="14" viewBox="0 0 14 14"><ellipse cx="7" cy="7" rx="5" ry="3" fill="none" stroke="#cccccc" stroke-width="1.2"/><circle cx="7" cy="7" r="1.5" fill="#cccccc"/><line x1="3" y1="3" x2="11" y2="11" stroke="#cccccc" stroke-width="1.5"/></svg>`;
+  return `<svg class="il-icon" width="14" height="14" viewBox="0 0 14 14"><ellipse cx="7" cy="7" rx="5" ry="3" fill="none" stroke="#cccccc" stroke-width="1.2"/><circle cx="7" cy="7" r="1.5" fill="#cccccc"/></svg>`;
+}
+function lockSVG(locked) {
+  if (locked) return `<svg class="il-icon" width="14" height="14" viewBox="0 0 14 14"><rect x="3" y="5" width="8" height="7" rx="1" fill="#cc6600"/><path d="M5,5 V3 a2,2 0 0,1 4,0 V5" fill="none" stroke="#cc6600" stroke-width="1.5"/></svg>`;
+  return `<svg class="il-icon" width="14" height="14" viewBox="0 0 14 14"><rect x="3" y="5" width="8" height="7" rx="1" fill="#cccccc"/><path d="M5,5 V3 a2,2 0 0,1 4,0 V4" fill="none" stroke="#cccccc" stroke-width="1.5" transform="translate(1,-1) rotate(15,7,3)"/></svg>`;
+}
+function triSVG(collapsed) {
+  if (collapsed) return `<svg class="il-icon" width="12" height="12" viewBox="0 0 12 12"><polygon points="3,2 10,6 3,10" fill="#cc8833"/></svg>`;
+  return `<svg class="il-icon" width="12" height="12" viewBox="0 0 12 12"><polygon points="2,3 6,10 10,3" fill="#cc8833"/></svg>`;
+}
+
+function getItemGroup(uid) {
+  return groups.find(g => g.itemUids.includes(uid)) || null;
+}
+
+// Resolve a room item's display name for the current language.
+// Strategy:
+//   1. If the room item itself has name_cn/name_en, use it.
+//   2. Otherwise look it up in allItems by src match and use that.
+//   3. Otherwise fall back to ri.name (old saves, user items).
+function getItemDisplayName(ri) {
+  const wantEn = lang === 'en';
+  // 1. Direct field on the room item
+  if (wantEn && ri.name_en && ri.name_en !== ri.name_cn) return ri.name_en;
+  if (!wantEn && ri.name_cn) return ri.name_cn;
+  // 2. Shop-item lookup (handles older saves where name_cn/_en weren't stored,
+  //    and the case where the manifest provided only one name field but the
+  //    other lang is available via the shop entry).
+  if (typeof allItems !== 'undefined' && Array.isArray(allItems)) {
+    const shop = allItems.find(it => it.src && ri.src && it.src === ri.src);
+    if (shop) {
+      if (wantEn && shop.name_en) return shop.name_en;
+      if (!wantEn && shop.name_cn) return shop.name_cn;
+    }
+  }
+  // 3. Last resort
+  return ri.name;
+}
+
+// Scroll the Items-in-Room panel so the given uid's row is visible.
+// If the uid is inside a collapsed group, expand the group first.
+function scrollItemListToUid(uid) {
+  const g = getItemGroup(uid);
+  if (g && g.collapsed) {
+    g.collapsed = false;
+    renderItemList();
+  }
+  setTimeout(() => {
+    const container = document.getElementById('divItemList');
+    const row = document.querySelector(`#pRoomItemList .il-item-row[data-uid="${uid}"]`);
+    if (!container || !row) return;
+    const cTop = container.scrollTop;
+    const cBot = cTop + container.clientHeight;
+    const rTop = row.offsetTop;
+    const rBot = rTop + row.offsetHeight;
+    if (rTop < cTop || rBot > cBot) {
+      container.scrollTop = rTop - container.clientHeight / 2 + row.offsetHeight / 2;
+    }
+  }, 0);
+}
+
+function getUngroupedItems() {
+  const grouped = new Set(groups.flatMap(g => g.itemUids));
+  return roomItems.filter(ri => !grouped.has(ri.uid));
+}
+
+// Shift-select tracking
+let shiftSelectedUids = new Set();
+
+let nonContigStampCounter = 0;
 function renderItemList() {
-  const tbody = document.getElementById('pRoomItemList');
-  tbody.innerHTML = '';
-  const sorted = [...roomItems].sort((a,b) => b.z - a.z);
-  sorted.forEach(ri => {
-    if (!ri.hasOwnProperty('locked')) ri.locked = false;
-    const tr = document.createElement('tr');
-    tr.style.cursor = 'pointer';
-    const lockColor = ri.locked ? '#cc6600' : '#cccccc';
-    const lockBody = ri.locked
-      ? '<rect x="3" y="5" width="8" height="7" rx="1" fill="#cc6600"/><path d="M5,5 V3 a2,2 0 0,1 4,0 V5" fill="none" stroke="#cc6600" stroke-width="1.5"/>'
-      : '<rect x="3" y="5" width="8" height="7" rx="1" fill="#cccccc"/><path d="M5,5 V3 a2,2 0 0,1 4,0 V4" fill="none" stroke="#cccccc" stroke-width="1.5" transform="translate(1,-1) rotate(15,7,3)"/>';
-    tr.innerHTML = `
-      <td width="20" align="center"><input type="checkbox" class="itemChk" data-uid="${ri.uid}"></td>
-      <td><div class="itemListNameDiv ${ri.uid === focusUid ? 'clsFocusItemList' : ''}"
-               onclick="focusItem(${ri.uid})">${ri.name}</div></td>
-      <td width="18" align="center">
-        <svg width="14" height="14" viewBox="0 0 14 14" style="cursor:pointer;vertical-align:middle;" onclick="toggleItemLock(${ri.uid})">
-          ${lockBody}
-        </svg>
-      </td>`;
-    tbody.appendChild(tr);
+  const container = document.getElementById('pRoomItemList');
+  container.innerHTML = '';
+
+  // Build a unified list sorted by z (desc).
+  // Groups appear at the position of their highest-z member if contiguous,
+  // otherwise at the bottom.
+  const allSorted = [...roomItems].sort((a, b) => b.z - a.z);
+  const groupedSet = new Set(groups.flatMap(g => g.itemUids));
+
+  // For each group, determine if its members are contiguous in z-order
+  const groupInsertZ = {}; // gid -> z position to insert at (highest member z), or -Infinity
+  groups.forEach(g => {
+    if (g.itemUids.length === 0) return;
+    const members = g.itemUids.map(uid => roomItems.find(r => r.uid === uid)).filter(Boolean);
+    if (members.length === 0) return;
+    members.sort((a, b) => b.z - a.z);
+    const highZ = members[0].z;
+    const lowZ = members[members.length - 1].z;
+
+    // Check contiguous: all items between highZ and lowZ should be in this group
+    const between = allSorted.filter(r => r.z <= highZ && r.z >= lowZ);
+    const isContiguous = between.length === members.length && between.every(r => g.itemUids.includes(r.uid));
+    groupInsertZ[g.gid] = isContiguous ? highZ : -Infinity;
+    g._isContiguous = isContiguous; // cached for renderGroupBlock
+    // Track when a group first became non-contig (used to order at the bottom: newest on top)
+    if (!isContiguous && !g.nonContigAt) g.nonContigAt = ++nonContigStampCounter;
+    if (isContiguous) g.nonContigAt = 0;
   });
+
+  // Track which groups have been rendered
+  const renderedGroups = new Set();
+  // Track which items are in groups (skip them from ungrouped rendering)
+  const inGroup = new Set(groups.flatMap(g => g.itemUids));
+
+  // Render in z-desc order
+  allSorted.forEach(ri => {
+    // Check if this item is the insertion point for a contiguous group
+    groups.forEach(g => {
+      if (!renderedGroups.has(g.gid) && groupInsertZ[g.gid] === ri.z && g.itemUids.includes(ri.uid)) {
+        renderGroupBlock(container, g);
+        renderedGroups.add(g.gid);
+      }
+    });
+
+    // Render ungrouped items
+    if (!inGroup.has(ri.uid)) {
+      renderItemRow(container, ri);
+    }
+  });
+
+  // Render non-contiguous groups at the bottom — newest non-contig first (on top of older ones)
+  const trailing = groups
+    .filter(g => !renderedGroups.has(g.gid) && g.itemUids.length > 0)
+    .sort((a, b) => (b.nonContigAt || 0) - (a.nonContigAt || 0));
+  trailing.forEach(g => {
+    renderGroupBlock(container, g);
+    renderedGroups.add(g.gid);
+  });
+
   document.getElementById('bChkAll').checked = false;
+}
+
+function renderGroupBlock(container, g) {
+  const gRow = document.createElement('div');
+  let cls = 'il-group-row';
+  if (focusGroupId === g.gid) cls += ' group-selected';
+  if (g._isContiguous === false) cls += ' non-contiguous';
+  gRow.className = cls;
+  gRow.draggable = true;
+  gRow.dataset.gid = g.gid;
+  gRow.id = 'group-row-' + g.gid;
+  const warnHtml = (g._isContiguous === false)
+    ? `<span class="il-warn-icon" onclick="event.stopPropagation();showWarn('warn_noncontig_reorder')" title="" data-gid="${g.gid}">⚠</span>`
+    : '';
+  gRow.innerHTML = `
+    <input type="checkbox" class="itemChk grpChk" data-gid="${g.gid}" style="flex-shrink:0;margin-right:2px;">
+    <span onclick="toggleGroupCollapse(${g.gid})">${triSVG(g.collapsed)}</span>
+    ${warnHtml}
+    <span class="il-name il-group-name" data-gid="${g.gid}" style="font-size:11px;">${g.name}</span>
+    <span onclick="toggleGroupVis(${g.gid})">${eyeSVG(g.visible)}</span>
+    <span onclick="toggleGroupLock(${g.gid})" style="margin-left:1px;">${lockSVG(g.locked)}</span>
+  `;
+  gRow.querySelector('.grpChk').addEventListener('change', function() {
+    const checked = this.checked;
+    g.itemUids.forEach(uid => {
+      const cb = container.querySelector(`.itemChk[data-uid="${uid}"]`);
+      if (cb) cb.checked = checked;
+    });
+  });
+  gRow.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', 'group:' + g.gid);
+  });
+  // dragover behavior depends on what's being dragged:
+  //   - if dragging an ITEM and the group is collapsed → highlight as "expand to drop inside"
+  //   - if dragging a GROUP → highlight as a reorder target
+  gRow.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.types.includes('text/plain') ? '' : '';
+    // We can't read the actual data on dragover (browser security) — use a heuristic:
+    // if this group is collapsed, expand it on hover so the user can drop on an inner row.
+    if (g.collapsed && !gRow._expandTimer) {
+      gRow.classList.add('drag-hover-collapsed');
+      gRow._expandTimer = setTimeout(() => {
+        gRow._expandTimer = null;
+        if (g.collapsed) { g.collapsed = false; renderItemList(); }
+      }, 350);
+    } else {
+      gRow.classList.add('drag-over-bot');
+    }
+  });
+  gRow.addEventListener('dragleave', () => {
+    gRow.classList.remove('drag-over-bot', 'drag-over-top', 'drag-hover-collapsed');
+    if (gRow._expandTimer) { clearTimeout(gRow._expandTimer); gRow._expandTimer = null; }
+  });
+  gRow.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (gRow._expandTimer) { clearTimeout(gRow._expandTimer); gRow._expandTimer = null; }
+    gRow.classList.remove('drag-over-bot', 'drag-over-top', 'drag-hover-collapsed');
+    // If dropping an item onto a collapsed group bar: expand instead of placing.
+    // (User then drops onto a specific inner row.) See fix request.
+    const data = e.dataTransfer.getData('text/plain');
+    if (data && data.startsWith('item:') && g.collapsed) {
+      g.collapsed = false;
+      renderItemList();
+      return;
+    }
+    handleDrop(e, 'group', g.gid);
+  });
+
+  // Group name click/dblclick — use a timer to distinguish
+  const nameSpan = gRow.querySelector('.il-group-name');
+  let clickTimer = null;
+  nameSpan.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; return; }
+    clickTimer = setTimeout(() => {
+      clickTimer = null;
+      selectGroup(g.gid);
+      toggleGroupCollapse(g.gid);
+    }, 280);
+  });
+  nameSpan.addEventListener('dblclick', (e) => {
+    e.stopPropagation();
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+    startGroupRename(g.gid, nameSpan);
+  });
+
+  container.appendChild(gRow);
+
+  const childDiv = document.createElement('div');
+  childDiv.className = 'il-group-children' + (g.collapsed ? ' collapsed' : '');
+  const gItems = g.itemUids.map(uid => roomItems.find(r => r.uid === uid)).filter(Boolean).sort((a, b) => b.z - a.z);
+  gItems.forEach(ri => renderItemRow(childDiv, ri));
+  container.appendChild(childDiv);
+}
+
+function renderItemRow(parent, ri) {
+  if (!ri.hasOwnProperty('locked')) ri.locked = false;
+  if (!ri.hasOwnProperty('visible')) ri.visible = true;
+
+  const row = document.createElement('div');
+  row.className = 'il-item-row';
+  if (ri.uid === focusUid) row.style.background = '#525dbd';
+  if (shiftSelectedUids.has(ri.uid)) row.classList.add('shift-selected');
+  row.draggable = true;
+  row.dataset.uid = ri.uid;
+
+  const nameColor = ri.uid === focusUid ? '#fff' : '';
+  row.innerHTML = `
+    <input type="checkbox" class="itemChk" data-uid="${ri.uid}" style="flex-shrink:0;margin-right:2px;">
+    <span class="il-name" style="${nameColor ? 'color:'+nameColor : ''}" data-uid="${ri.uid}">${getItemDisplayName(ri)}</span>
+    <span onclick="toggleItemVis(${ri.uid})">${eyeSVG(ri.visible)}</span>
+    <span onclick="toggleItemLock(${ri.uid})" style="margin-left:1px;">${lockSVG(ri.locked)}</span>
+  `;
+
+  // Name click vs dblclick: only user-imported items can be renamed.
+  // For non-user items, single click selects immediately (no debounce).
+  // For user items, debounce 280ms so dblclick can fire rename — UNLESS
+  // shift is held (range-select should be instant, never a rename).
+  const nameSpan = row.querySelector('.il-name');
+  if (ri.isUserItem) {
+    let clickTimer = null;
+    nameSpan.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (e.shiftKey) {
+        // No debounce for shift-click — fire selection immediately
+        if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+        handleItemClick(e, ri.uid);
+        return;
+      }
+      if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; return; }
+      clickTimer = setTimeout(() => {
+        clickTimer = null;
+        handleItemClick(e, ri.uid);
+      }, 280);
+    });
+    nameSpan.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+      startUserItemRename(ri.uid, nameSpan);
+    });
+  } else {
+    nameSpan.addEventListener('click', (e) => handleItemClick(e, ri.uid));
+  }
+
+  // Drag reorder
+  row.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', 'item:' + ri.uid);
+  });
+  row.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const rect = row.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    const above = e.clientY < mid;
+    row.classList.remove('drag-over-top', 'drag-over-bot');
+    row.classList.add(above ? 'drag-over-top' : 'drag-over-bot');
+    row.dataset.dropAbove = above ? '1' : '0';
+  });
+  row.addEventListener('dragleave', () => {
+    row.classList.remove('drag-over-top', 'drag-over-bot');
+    delete row.dataset.dropAbove;
+  });
+  row.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const above = row.dataset.dropAbove === '1';
+    row.classList.remove('drag-over-top', 'drag-over-bot');
+    delete row.dataset.dropAbove;
+    handleDrop(e, 'item', ri.uid, { dropAbove: above });
+  });
+
+  parent.appendChild(row);
+}
+
+// Helper: move a contiguous-group's members so they sit contiguously at the
+// z-position of `anchorZ` (or just below it). Preserves internal order.
+// Returns true on success, false if group isn't currently contiguous.
+function reorderContiguousGroup(g, anchorZ) {
+  const members = g.itemUids.map(uid => roomItems.find(r => r.uid === uid)).filter(Boolean);
+  if (members.length === 0) return false;
+  // Verify the group is currently contiguous
+  const sortedAll = [...roomItems].sort((a, b) => a.z - b.z);
+  const memberSet = new Set(members.map(m => m.uid));
+  const allZ = sortedAll.map(r => r.z);
+  // indices of members in sortedAll
+  const memberIdx = sortedAll.map((r, i) => memberSet.has(r.uid) ? i : -1).filter(i => i >= 0);
+  const isContig = memberIdx.length > 0 &&
+    memberIdx[memberIdx.length - 1] - memberIdx[0] + 1 === memberIdx.length;
+  if (!isContig) return false;
+
+  // Strategy: rebuild the z assignment.
+  // 1. Take all items except group members, in current z order.
+  // 2. Take group members in their current internal z order.
+  // 3. Find where the anchor item lands among the "others", insert the group block right after it.
+  const others = sortedAll.filter(r => !memberSet.has(r.uid));
+  const groupOrdered = sortedAll.filter(r => memberSet.has(r.uid));
+
+  // Where to insert? Right after the "other" item with z === anchorZ.
+  // If the anchor was itself a group member, fall back to anchorZ position among others
+  // (i.e. insert before the first "other" whose z > anchorZ).
+  let insertIdx = others.findIndex(r => r.z === anchorZ);
+  if (insertIdx < 0) {
+    insertIdx = others.findIndex(r => r.z > anchorZ);
+    if (insertIdx < 0) insertIdx = others.length; // append at top
+  } else {
+    insertIdx += 1; // place after the anchor item
+  }
+
+  const rebuilt = [...others.slice(0, insertIdx), ...groupOrdered, ...others.slice(insertIdx)];
+  // Reassign z to 1..N preserving order
+  rebuilt.forEach((r, i) => { r.z = i + 1; });
+  nextZ = rebuilt.length + 1;
+  return true;
+}
+
+function showWarn(msgKey) {
+  showModal(t('warn_title'), t(msgKey), false, '', () => {});
+}
+
+function handleDrop(e, targetType, targetId, opts) {
+  const data = e.dataTransfer.getData('text/plain');
+  if (!data) return;
+  const dropAbove = opts && opts.dropAbove === true; // for item targets: drop above (higher z) vs below (lower z)
+
+  if (data.startsWith('item:')) {
+    const dragUid = parseInt(data.split(':')[1]);
+    const dragItem = roomItems.find(r => r.uid === dragUid);
+    const targetItem = (targetType === 'item') ? roomItems.find(r => r.uid === targetId) : null;
+    if (!dragItem) return;
+    if (targetType === 'item' && (!targetItem || dragUid === targetId)) return;
+
+    pushUndoState();
+
+    if (targetType === 'item') {
+      // Proper insert reorder (not a swap): take the dragged item out of the
+      // z-stack and reinsert it directly above or below the target — based on
+      // where in the row the user dropped (top half → higher z, bottom half →
+      // lower z). Everyone else keeps relative order.
+      const sortedAsc = [...roomItems].sort((a, b) => a.z - b.z);
+      const without = sortedAsc.filter(r => r.uid !== dragUid);
+      const tgtIdx = without.findIndex(r => r.uid === targetId);
+      // dropAbove (list "top" / higher z) → insert at tgtIdx+1, dropBelow → tgtIdx
+      const insertIdx = dropAbove ? tgtIdx + 1 : tgtIdx;
+      const rebuilt = [...without.slice(0, insertIdx), dragItem, ...without.slice(insertIdx)];
+      rebuilt.forEach((r, i) => { r.z = i + 1; });
+      nextZ = rebuilt.length + 1;
+
+      // If dropping onto a group member, move dragged item into that group
+      const srcGroup = getItemGroup(dragUid);
+      const tgtGroup = getItemGroup(targetId);
+      if (srcGroup && srcGroup !== tgtGroup) {
+        srcGroup.itemUids = srcGroup.itemUids.filter(u => u !== dragUid);
+      }
+      if (tgtGroup && !tgtGroup.itemUids.includes(dragUid)) {
+        const idx = tgtGroup.itemUids.indexOf(targetId);
+        tgtGroup.itemUids.splice(idx + (dropAbove ? 0 : 1), 0, dragUid);
+
+        // Check whether the group is still contiguous after the insert.
+        const sortedAll = [...roomItems].sort((a, b) => a.z - b.z);
+        const memSet = new Set(tgtGroup.itemUids);
+        const memIdx = sortedAll.map((r, i) => memSet.has(r.uid) ? i : -1).filter(i => i >= 0);
+        const becameContig = memIdx.length > 0 &&
+          memIdx[memIdx.length - 1] - memIdx[0] + 1 === memIdx.length;
+        if (!becameContig) {
+          tgtGroup.nonContigAt = ++nonContigStampCounter;
+          setTimeout(() => showWarn('warn_became_noncontig'), 30);
+        }
+      }
+    } else if (targetType === 'group') {
+      // Item dropped onto a group bar (only reaches here if group is NOT collapsed,
+      // because collapsed groups auto-expand instead — see renderGroupBlock).
+      // Treat as: move item to top of group's stack (highest z member).
+      const tgtGroup = groups.find(g => g.gid === targetId);
+      if (!tgtGroup) { renderCanvas(); renderItemList(); return; }
+      const srcGroup = getItemGroup(dragUid);
+      if (srcGroup && srcGroup !== tgtGroup) {
+        srcGroup.itemUids = srcGroup.itemUids.filter(u => u !== dragUid);
+      }
+      if (!tgtGroup.itemUids.includes(dragUid)) {
+        tgtGroup.itemUids.push(dragUid);
+      }
+    }
+
+  } else if (data.startsWith('group:')) {
+    const dragGid = parseInt(data.split(':')[1]);
+    const dragGroup = groups.find(g => g.gid === dragGid);
+    if (!dragGroup) return;
+    if (targetType === 'group' && dragGid === targetId) return;
+
+    // Group-on-group or group-on-item reorder.
+    // Only allowed for CONTIGUOUS groups (the dragged one).
+    if (dragGroup._isContiguous === false) {
+      showWarn('warn_noncontig_reorder');
+      renderCanvas(); renderItemList();
+      return;
+    }
+
+    pushUndoState();
+
+    // Compute anchor z (the z of the target row)
+    let anchorZ;
+    if (targetType === 'item') {
+      const ti = roomItems.find(r => r.uid === targetId);
+      if (!ti) return;
+      anchorZ = ti.z;
+    } else { // target is another group
+      const tg = groups.find(g => g.gid === targetId);
+      if (!tg) return;
+      const mems = tg.itemUids.map(uid => roomItems.find(r => r.uid === uid)).filter(Boolean);
+      if (mems.length === 0) return;
+      anchorZ = Math.max(...mems.map(m => m.z)); // top of target group
+    }
+
+    reorderContiguousGroup(dragGroup, anchorZ);
+  }
+
+  renderCanvas();
+  renderItemList();
+}
+
+function handleItemClick(e, uid) {
+  focusGroupId = null; // Clear group selection when clicking individual item
+  if (e.shiftKey && lastClickedUid !== null) {
+    // Shift-select: select range between lastClickedUid and uid
+    const sorted = [...roomItems].sort((a,b) => b.z - a.z);
+    const idx1 = sorted.findIndex(r => r.uid === lastClickedUid);
+    const idx2 = sorted.findIndex(r => r.uid === uid);
+    const lo = Math.min(idx1, idx2), hi = Math.max(idx1, idx2);
+    shiftSelectedUids.clear();
+    for (let i = lo; i <= hi; i++) shiftSelectedUids.add(sorted[i].uid);
+    focusUid = uid;
+  } else {
+    shiftSelectedUids.clear();
+    focusUid = uid;
+    listLocked = true;
+  }
+  lastClickedUid = uid;
+  renderCanvas();
+  renderItemList();
+}
+
+function toggleItemVis(uid) {
+  const ri = roomItems.find(r => r.uid === uid);
+  if (!ri) return;
+  ri.visible = ri.visible === false ? true : false;
+  pushUndoState();
+  renderCanvas();
+  renderItemList();
 }
 
 function toggleItemLock(uid) {
@@ -1531,6 +2348,152 @@ function toggleItemLock(uid) {
   pushUndoState();
   renderCanvas();
   renderItemList();
+}
+
+function toggleGroupCollapse(gid) {
+  const g = groups.find(gr => gr.gid === gid);
+  if (g) { g.collapsed = !g.collapsed; renderItemList(); }
+}
+
+function selectGroup(gid) {
+  const g = groups.find(gr => gr.gid === gid);
+  if (!g) return;
+  if (focusGroupId === gid) {
+    // Deselect group
+    focusGroupId = null;
+    focusUid = null;
+  } else {
+    focusGroupId = gid;
+    focusUid = null;
+    listLocked = true;
+  }
+  renderCanvas();
+  renderItemList();
+}
+
+function toggleGroupVis(gid) {
+  const g = groups.find(gr => gr.gid === gid);
+  if (!g) return;
+  g.visible = !g.visible;
+  g.itemUids.forEach(uid => {
+    const ri = roomItems.find(r => r.uid === uid);
+    if (ri) ri.visible = g.visible;
+  });
+  pushUndoState();
+  renderCanvas();
+  renderItemList();
+}
+
+function toggleGroupLock(gid) {
+  const g = groups.find(gr => gr.gid === gid);
+  if (!g) return;
+  g.locked = !g.locked;
+  g.itemUids.forEach(uid => {
+    const ri = roomItems.find(r => r.uid === uid);
+    if (ri) ri.locked = g.locked;
+  });
+  pushUndoState();
+  renderCanvas();
+  renderItemList();
+}
+
+function startGroupRename(gid, spanEl) {
+  const g = groups.find(gr => gr.gid === gid);
+  if (!g) return;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = g.name;
+  input.style.cssText = 'width:90%;height:14px;font-size:11px;border:1px solid #cca080;padding:0 2px;font-family:inherit;';
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { finishRename(); }
+    if (e.key === 'Escape') { renderItemList(); }
+  });
+  input.addEventListener('blur', finishRename);
+  function finishRename() {
+    input.removeEventListener('blur', finishRename);
+    g.name = input.value || g.name;
+    renderItemList();
+  }
+  spanEl.textContent = '';
+  spanEl.appendChild(input);
+  input.focus();
+  input.select();
+}
+
+function renameGroupInline(gid) {
+  // Called from Ctrl+R — find the span and trigger inline edit
+  const span = document.querySelector(`.il-group-name[data-gid="${gid}"]`);
+  if (span) startGroupRename(gid, span);
+}
+
+function startUserItemRename(uid, spanEl) {
+  const ri = roomItems.find(r => r.uid === uid);
+  if (!ri || !ri.isUserItem) return;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = getItemDisplayName(ri);
+  input.style.cssText = 'width:90%;height:14px;font-size:11px;border:1px solid #cca080;padding:0 2px;font-family:inherit;';
+  input.addEventListener('keydown', (e) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') { finishRename(); }
+    if (e.key === 'Escape') { renderItemList(); }
+  });
+  input.addEventListener('click', e => e.stopPropagation());
+  input.addEventListener('blur', finishRename);
+  function finishRename() {
+    input.removeEventListener('blur', finishRename);
+    const v = input.value.trim();
+    if (v) {
+      // Apply the same name for both languages (user request)
+      ri.name = v;
+      ri.name_cn = v;
+      ri.name_en = v;
+      pushUndoState();
+    }
+    renderItemList();
+  }
+  spanEl.textContent = '';
+  spanEl.appendChild(input);
+  input.focus();
+  input.select();
+}
+
+// Create group from checked/shift-selected items
+function createGroup() {
+  let uids = getSelectedItemUids();
+  if (uids.length === 0) return;
+
+  // Reject if any selected item is already in a group
+  const alreadyGrouped = uids.filter(uid => getItemGroup(uid));
+  if (alreadyGrouped.length > 0) {
+    showWarn('warn_already_grouped');
+    return;
+  }
+
+  pushUndoState();
+
+  const gid = nextGid++;
+  groups.push({
+    gid, name: 'Group ' + String(gid).padStart(2, '0'),
+    collapsed: false, visible: true, locked: false,
+    itemUids: uids
+  });
+  shiftSelectedUids.clear();
+  renderItemList();
+
+  // Scroll to the new group
+  setTimeout(() => {
+    const el = document.getElementById('group-row-' + gid);
+    if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, 50);
+}
+
+function getSelectedItemUids() {
+  // Combine checked + shift-selected
+  const checked = getCheckedUids();
+  const shifted = [...shiftSelectedUids];
+  const combined = new Set([...checked, ...shifted]);
+  return [...combined];
 }
 
 let listLocked = false;
@@ -1547,19 +2510,41 @@ function ciCheckAllBox(checked) {
 }
 
 function getCheckedUids() {
-  return [...document.querySelectorAll('.itemChk:checked')].map(cb => parseInt(cb.dataset.uid));
+  return [...document.querySelectorAll('.itemChk:checked')].map(cb => parseInt(cb.dataset.uid)).filter(n => !isNaN(n));
 }
 
 function ciRemoveItem() {
+  // If a group title is selected (not via checkbox), treat Del as "ungroup" —
+  // dissolve the group, keep its items in the canvas.
+  if (focusGroupId !== null) {
+    const checked = getCheckedUids();
+    const hasShift = shiftSelectedUids.size > 0;
+    // Only ungroup if no items are checked/shift-selected (otherwise user
+    // probably means to delete those items, not ungroup).
+    if (checked.length === 0 && !hasShift) {
+      pushUndoState();
+      groups = groups.filter(g => g.gid !== focusGroupId);
+      focusGroupId = null;
+      renderCanvas();
+      renderItemList();
+      return;
+    }
+  }
+
   pushUndoState();
-  const uids = getCheckedUids();
+  const uids = getSelectedItemUids();
   if (uids.length === 0 && focusUid) {
     roomItems = roomItems.filter(r => r.uid !== focusUid);
+    // Remove from groups
+    groups.forEach(g => g.itemUids = g.itemUids.filter(u => u !== focusUid));
     focusUid = null;
   } else {
     roomItems = roomItems.filter(r => !uids.includes(r.uid));
+    groups.forEach(g => g.itemUids = g.itemUids.filter(u => !uids.includes(u)));
     if (uids.includes(focusUid)) focusUid = null;
   }
+  groups = groups.filter(g => g.itemUids.length > 0);
+  shiftSelectedUids.clear();
   renderCanvas();
   renderItemList();
 }
@@ -1583,8 +2568,44 @@ function simpleLayerDown(ri) {
 }
 
 function ciItemMoveZ(bUp) {
+  // If a group is the active selection, shift the whole group block by 1.
+  // Only meaningful when group is contiguous; otherwise warn.
+  if (focusGroupId !== null && getCheckedUids().length === 0 && shiftSelectedUids.size === 0) {
+    const g = groups.find(gr => gr.gid === focusGroupId);
+    if (!g || g.itemUids.length === 0) return;
+    if (g._isContiguous === false) {
+      showWarn('warn_noncontig_reorder');
+      return;
+    }
+    pushUndoState();
+    const sortedAll = [...roomItems].sort((a, b) => a.z - b.z);
+    const memSet = new Set(g.itemUids);
+    const memIdx = sortedAll.map((r, i) => memSet.has(r.uid) ? i : -1).filter(i => i >= 0);
+    if (memIdx.length === 0) return;
+    if (bUp) {
+      // anchor on the item just above the group's top member
+      const aboveIdx = memIdx[memIdx.length - 1] + 1;
+      if (aboveIdx >= sortedAll.length) return; // already at top
+      const anchorZ = sortedAll[aboveIdx].z;
+      reorderContiguousGroup(g, anchorZ);
+    } else {
+      // anchor below the group's bottom member
+      const belowIdx = memIdx[0] - 1;
+      if (belowIdx < 0) return; // already at bottom
+      // We want to insert the group block so its bottom sits below this anchor.
+      // reorderContiguousGroup inserts after the anchor; to go below, use the
+      // item ONE step below the bottom-below (i.e., shift insertion).
+      const belowBelowIdx = belowIdx - 1;
+      const anchorZ = belowBelowIdx >= 0 ? sortedAll[belowBelowIdx].z : 0;
+      reorderContiguousGroup(g, anchorZ);
+    }
+    renderCanvas();
+    renderItemList();
+    return;
+  }
+
   pushUndoState();
-  const uids = getCheckedUids();
+  const uids = getSelectedItemUids();
   const targets = uids.length > 0 ? uids : (focusUid ? [focusUid] : []);
   targets.forEach(uid => {
     const ri = roomItems.find(r => r.uid === uid);
@@ -1625,12 +2646,24 @@ function modalCancel() {
   document.getElementById('modalOverlay').classList.remove('visible');
   modalCb = null;
 }
+
+function showAbout() {
+  document.getElementById('aboutOverlay').classList.add('visible');
+}
+function hideAbout() {
+  document.getElementById('aboutOverlay').classList.remove('visible');
+}
 document.getElementById('modalInput').addEventListener('keydown', e => { if (e.key === 'Enter') modalConfirm(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('aboutOverlay').classList.contains('visible')) {
+    hideAbout();
+  }
+});
 
 async function doSave() {
   showModal(t('save_title'), t('save_prompt'), true, currentSaveName || '', (name) => {
     if (!name) return;
-    const saveData = { items: roomItems.map(ri => ({ ...ri })), timestamp: Date.now() };
+    const saveData = { items: roomItems.map(ri => ({ ...ri })), groups: groups.map(g => ({...g})), timestamp: Date.now() };
     currentSaveName = name;
     updatePlanNameDisplay();
     // Download as JSON file
@@ -1657,6 +2690,8 @@ function handleUploadJson(input) {
         return;
       }
       roomItems = data.items.map(it => ({ ...it }));
+      groups = (data.groups || []).map(g => ({...g}));
+      nextGid = groups.length > 0 ? Math.max(...groups.map(g => g.gid)) + 1 : 1;
       nextUid = Math.max(1, ...roomItems.map(r => r.uid)) + 1;
       nextZ = Math.max(1, ...roomItems.map(r => r.z)) + 1;
       // Count existing user items to continue numbering
@@ -1701,7 +2736,7 @@ function handleUploadItem(input) {
       const uid = nextUid++;
       const z = nextZ++;
       roomItems.push({
-        uid, name, src: dataUrl,
+        uid, name, name_cn: name, name_en: name, src: dataUrl,
         x: Math.round((CW - w) / 2),
         y: Math.round((CH - h) / 2),
         z, w, h, mirrored: false,
@@ -1723,7 +2758,7 @@ function handleUploadItem(input) {
 function doNewCanvas() {
   showModal(t('new_title'), t('new_prompt'), true, '', name => {
     if (!name) return;
-    roomItems = []; nextUid = 1; nextZ = 1; focusUid = null;
+    roomItems = []; nextUid = 1; nextZ = 1; focusUid = null; groups = []; nextGid = 1;
     currentSaveName = name;
     updatePlanNameDisplay();
     renderCanvas();
@@ -1755,7 +2790,7 @@ function updatePlanNameDisplay() {
 
 function doResetCanvas() {
   showModal(t('reset_title'), t('reset_confirm'), false, '', () => {
-    roomItems = []; nextUid = 1; nextZ = 1; focusUid = null;
+    roomItems = []; nextUid = 1; nextZ = 1; focusUid = null; groups = []; nextGid = 1;
     renderCanvas();
     renderItemList();
   });
@@ -1768,27 +2803,106 @@ const undoStack = [];
 const MAX_UNDO = 50;
 
 function pushUndoState() {
-  undoStack.push(JSON.stringify(roomItems.map(ri => ({...ri}))));
+  undoStack.push(JSON.stringify({items: roomItems.map(ri => ({...ri})), groups: groups.map(g => ({...g}))}));
   if (undoStack.length > MAX_UNDO) undoStack.shift();
 }
 
 function doUndo() {
   if (undoStack.length === 0) return;
   const prev = JSON.parse(undoStack.pop());
-  roomItems = prev;
+  roomItems = prev.items;
+  groups = prev.groups || [];
   nextUid = Math.max(1, ...roomItems.map(r => r.uid)) + 1;
   nextZ = Math.max(1, ...roomItems.map(r => r.z)) + 1;
+  nextGid = groups.length > 0 ? Math.max(...groups.map(g => g.gid)) + 1 : 1;
   focusUid = null;
   listLocked = false;
+  shiftSelectedUids.clear();
   renderCanvas();
   renderItemList();
 }
 
-// Ctrl+Z
+// Clipboard for Ctrl+C / Ctrl+V
+let itemClipboard = []; // array of shallow-copied item snapshots
+
+function ciCopySelection() {
+  // Sources: shift-selected, checked, focused group, or focusUid (in that priority).
+  let uids;
+  if (focusGroupId !== null) {
+    const g = groups.find(gr => gr.gid === focusGroupId);
+    uids = g ? [...g.itemUids] : [];
+  } else {
+    uids = getSelectedItemUids();
+    if (uids.length === 0 && focusUid !== null) uids = [focusUid];
+  }
+  if (uids.length === 0) return;
+  // Preserve z-order in the clipboard (low → high) so paste keeps stacking
+  const snapshots = uids
+    .map(u => roomItems.find(r => r.uid === u))
+    .filter(Boolean)
+    .sort((a, b) => a.z - b.z)
+    .map(ri => ({ ...ri }));
+  itemClipboard = snapshots;
+}
+
+function ciPasteClipboard() {
+  if (!itemClipboard.length) return;
+  pushUndoState();
+  const newUids = [];
+  // Paste at top of stack in original relative order, offset 12px down-right
+  itemClipboard.forEach(snap => {
+    const uid = nextUid++;
+    const z = nextZ++;
+    roomItems.push({
+      ...snap,
+      uid,
+      z,
+      x: snap.x + 12,
+      y: snap.y + 12
+    });
+    newUids.push(uid);
+  });
+  // Select pasted items as a shift-selection so they can be moved together
+  shiftSelectedUids = new Set(newUids);
+  focusUid = newUids[newUids.length - 1];
+  focusGroupId = null;
+  renderCanvas();
+  renderItemList();
+}
+
+// Ctrl+Z, Ctrl+G, Ctrl+R, Ctrl+C, Ctrl+V
 document.addEventListener('keydown', (e) => {
+  // Ignore when typing in an input/textarea (don't hijack browser copy/paste)
+  const tag = (e.target && e.target.tagName) || '';
+  const isEditable = tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable);
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    if (isEditable) return;
     e.preventDefault();
     doUndo();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+    if (isEditable) return;
+    e.preventDefault();
+    createGroup();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+    if (isEditable) return;
+    e.preventDefault();
+    // Rename focused group or group of focused item
+    if (focusUid) {
+      const g = getItemGroup(focusUid);
+      if (g) renameGroupInline(g.gid);
+    }
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+    if (isEditable) return;
+    e.preventDefault();
+    ciCopySelection();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+    if (isEditable) return;
+    e.preventDefault();
+    ciPasteClipboard();
   }
 });
 
