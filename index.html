@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Episode 1 Random Index</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        background: #000080;
+        color: #ffffcc;
+        font-family: "Times New Roman", Times, serif;
+      }
+
+      table {
+        width: min(520px, calc(100vw - 28px));
+        border: 4px ridge #c0c0c0;
+        background: #000040;
+      }
+
+      td {
+        padding: 18px;
+        text-align: center;
+      }
+
+      a {
+        color: #00ffff;
+      }
+
+      .blink {
+        animation: blink 0.8s steps(2, start) infinite;
+        color: #ffcc00;
+        font-weight: bold;
+      }
+
+      @keyframes blink {
+        50% {
+          visibility: hidden;
+        }
+      }
+    </style>
+    <script>
+      const destinations = [
+        { label: 'Minihome', url: './minihome/' },
+        { label: 'My Fav Game 2005', url: './myfavgame2005/index.html' },
+        { label: '404 Not Found', url: './404.html' },
+        { label: 'World Loading', url: './world_loading/' }
+      ];
+
+      const randomIndex = (() => {
+        if (window.crypto?.getRandomValues) {
+          const values = new Uint32Array(1);
+          window.crypto.getRandomValues(values);
+          return values[0] % destinations.length;
+        }
+
+        return Math.floor(Math.random() * destinations.length);
+      })();
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const choice = destinations[randomIndex];
+        document.getElementById('destination').textContent = choice.label;
+        window.setTimeout(() => window.location.replace(choice.url), 280);
+      });
+    </script>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <div class="blink">Random Web Portal Loading...</div>
+          <p>Launching: <strong id="destination">somewhere</strong></p>
+          <noscript>
+            <p>JavaScript is off. Pick one:</p>
+            <p>
+              <a href="./minihome/">minihome</a> |
+              <a href="./myfavgame2005/index.html">myfavgame2005</a> |
+              <a href="./404.html">404</a> |
+              <a href="./world_loading/">world loading</a>
+            </p>
+          </noscript>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

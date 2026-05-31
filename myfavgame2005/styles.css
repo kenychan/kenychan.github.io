@@ -1,0 +1,51 @@
+html, body { margin:0; padding:0; background:#fff; }
+body { font-family: Arial; }
+
+.page { position:relative; width:1244px; height:1050px; margin:0 auto; overflow:hidden; background:#fff; }
+.bg { position:absolute; inset:0; width:1244px; height:1050px; user-select:none; pointer-events:none; }
+a { color:#006ad2; }
+.hot, .banner { position:absolute; display:block; cursor:pointer; text-decoration:none; }
+.hot:hover, .banner:hover, .dl:hover, .small-button:hover, .forum-link:hover { filter:brightness(1.06); }
+.banner img { display:block; width:100%; height:100%; border:0; object-fit:fill; }
+/* exact slots from the original layout, with 5px IE-edge crop removed */
+.b1 { left:13px; top:276px; width:307px; height:166px; border-radius:10px; overflow:hidden; }
+.b2 { left:13px; top:449px; width:307px; height:143px; border-radius:10px; overflow:hidden; }
+.b3 { left:13px; top:599px; width:307px; height:151px; border-radius:10px; overflow:hidden; }
+.b4 { left:13px; top:763px; width:307px; height:104px; border-radius:10px; overflow:hidden; }
+.b5 { left:13px; top:875px; width:307px; height:80px; border-radius:10px; overflow:hidden; }
+.b6 { left:107px; top:963px; width:202px; height:53px; border-radius:8px; overflow:hidden; }
+.logo { left:23px; top:22px; width:150px; height:70px; }
+.home { left:347px; top:223px; width:101px; height:101px; border-radius:50%; }
+.forums { left:1105px; top:226px; width:105px; height:105px; border-radius:50%; }
+.panel { position:absolute; left:348px; width:867px; box-sizing:border-box; font-size:16px; color:#111; }
+.notice { top:344px; height:180px; background:#fff; border:1px solid #cfd6d8; border-radius:9px; box-shadow:none; }
+.download { top:520px; height:434px; background:#fff; border:1px solid #cfd6d8; border-radius:9px; box-shadow:none; }
+.bar { height:45px; line-height:45px; margin:8px 8px 0 8px; border-radius:12px 12px 0 0; font-size:23px; font-weight:bold; color:#fff; text-shadow:1px 1px 0 #066; letter-spacing:.2px; padding-left:60px; box-sizing:border-box; position:relative; }
+.blue { background:linear-gradient(#3ab9f0,#008ed0); border:1px solid #40a7c7; }
+.green { background:linear-gradient(#23cabc,#069a90); border:1px solid #08a69d; }
+.icon { position:absolute; left:12px; top:5px; width:38px; height:34px; border-radius:6px; }
+.chest { background:linear-gradient(#ffd85a,#b87300); border:2px solid #c75200; }
+.chest:before { content:""; position:absolute; left:14px; top:0; bottom:0; border-left:4px solid #8b3e00; }
+.bag { background:#b56a16; border-radius:50% 50% 45% 45%; border:2px solid #e6b34a; }
+.bag:before { content:"$"; color:#fff7a8; font-weight:bold; font-size:24px; position:absolute; left:12px; top:4px; }
+.alert { margin:23px 22px 10px 22px; color:#d50000; line-height:1.55; font-size:17px; font-weight:bold; }
+.small-button { display:inline-block; margin-left:20px; height:30px; line-height:30px; padding:0 14px 0 42px; border:1px solid #98afd3; border-radius:4px; background:linear-gradient(#fff,#e9f0ff); color:#075cc6; font-weight:bold; font-size:17px; position:relative; }
+.mini-penguin { position:absolute; left:10px; top:4px; width:23px; height:20px; border-radius:50%; background:#111; box-shadow: inset 0 -6px 0 #fff; }
+.mini-penguin:after { content:""; position:absolute; left:8px; top:8px; border-left:4px solid transparent; border-right:4px solid transparent; border-top:6px solid #ff9700; }
+.intro { margin:18px 20px 2px 20px; font-size:16px; line-height:1.35; }
+.intro.second { margin-top:0; }
+.portal-grid { position:absolute; left:20px; right:20px; top:140px; display:grid; grid-template-columns:1fr 1fr; column-gap:48px; row-gap:18px; }
+.portal h3 { margin:0 0 5px 0; font-size:17px; font-weight:bold; }
+.dl { display:inline-block; height:24px; line-height:24px; margin-right:8px; padding:0 10px 0 31px; border:1px solid #9bb3d5; border-radius:4px; background:linear-gradient(#fff,#e7f1ff); color:#075ed1; font-weight:bold; font-size:15px; text-decoration:none; position:relative; }
+.dl:before { content:"↓"; position:absolute; left:0; top:0; width:25px; height:24px; color:#fff; font-size:21px; font-weight:bold; text-align:center; line-height:21px; }
+.red:before { background:linear-gradient(#ff8c4d,#e23818); }
+.bluebtn:before { background:linear-gradient(#59b6ff,#0874dc); }
+.mirror:before { content:"🌐"; font-size:15px; background:#dcefff; color:#0651a8; }
+.steps { position:absolute; left:7px; right:12px; bottom:72px; min-height:76px; border:1px solid #e5c781; border-radius:10px; background:#fffdf1; padding:9px 10px 7px 55px; box-sizing:border-box; }
+.steps p { margin:2px 0; font-size:16px; line-height:1.25; }
+.steps b { color:#e72d70; margin-right:6px; }
+.info-dot { position:absolute; left:16px; top:23px; width:28px; height:28px; border-radius:50%; background:#2897df; color:#fff; text-align:center; line-height:28px; font:bold 21px Arial; }
+.support { position:absolute; left:7px; right:12px; bottom:10px; height:54px; border:1px solid #b4d3ee; border-radius:8px; background:#f7fcff; display:flex; align-items:center; justify-content:space-between; padding:5px 26px 5px 124px; box-sizing:border-box; }
+.support p { margin:0; font-size:16px; line-height:1.25; }
+.forum-link { display:block; min-width:230px; text-align:center; height:36px; line-height:36px; border-radius:6px; border:1px solid #1c77ca; color:#fff; font-size:20px; font-weight:bold; text-decoration:none; background:linear-gradient(#48b3ff,#0c6bd1); box-shadow: inset 0 1px 0 #c8e8ff; }
+.site-footer { position:absolute; left:348px; top:972px; width:830px; text-align:left; color:#111; font-size:14px; line-height:1.55; }

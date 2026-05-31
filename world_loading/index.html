@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Loading</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      iframe {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: transparent;
+      }
+
+      .fallback {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        z-index: 2;
+        padding: 7px 9px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        background: rgba(0, 0, 0, 0.55);
+        color: #eaffff;
+        font: 12px Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe id="pixel-aero-renderer" src="./renderer.html?background=1" title="World Loading background"></iframe>
+    <div class="fallback" id="status">Loading preset...</div>
+    <script>
+      const frame = document.getElementById('pixel-aero-renderer');
+      const status = document.getElementById('status');
+
+      const presetPromise = fetch('../default.json', { cache: 'no-store' })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Preset request failed: ${response.status}`);
+          }
+
+          return response.json();
+        })
+        .catch((error) => {
+          console.error(error);
+          status.textContent = 'Default preset could not be loaded.';
+          return null;
+        });
+
+      frame.addEventListener('load', () => {
+        presetPromise.then((payload) => {
+          if (!payload) {
+            return;
+          }
+
+          frame.contentWindow?.postMessage({ type: 'pixel-aero-preset', payload }, '*');
+          status.hidden = true;
+        });
+      });
+    </script>
+  </body>
+</html>

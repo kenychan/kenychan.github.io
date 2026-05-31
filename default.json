@@ -1,0 +1,225 @@
+{
+  "version": 2,
+  "params": {
+    "mode": "impostor",
+    "preset": "desktop",
+    "invertDepth": false,
+    "depthScale": 1.2051713425111017,
+    "depthBias": -0.24738502295312004,
+    "depthCurve": 4,
+    "sizeNear": 0.7728159197125465,
+    "sizeFar": 4,
+    "sizeCurve": 1.18,
+    "sizeJitter": 0.17,
+    "depthClampMin": 0,
+    "depthClampMax": 1,
+    "maxCubeScreenWidth": 0.01,
+    "cubeRotation": 0,
+    "density": 0.9751915889690214,
+    "edgeBias": 2.42,
+    "backgroundDensity": 1,
+    "spawnThreshold": 0.08528525170855514,
+    "spawnSoftness": 1,
+    "transitionT": 0.145,
+    "transitionWarpAmount": 0.042,
+    "clusterGridX": 36,
+    "clusterGridY": 16,
+    "clusterSwayAmount": 0.06593960932300898,
+    "clusterSwaySpeed": 0.68,
+    "clusterDepthAmount": 0.14959397806371802,
+    "localJitterAmount": 1,
+    "skeletonInfluence": 0.96,
+    "skeletonSwayAmount": 0.035,
+    "skeletonSwaySpeed": 1.15,
+    "skeletonSearchRadius": 0.042,
+    "neighborTextureSampling": false,
+    "neighborTextureRadius": 1,
+    "backgroundColor": "#f0fff3",
+    "backgroundPhotoUrl": "",
+    "normalInfluence": 0.46,
+    "normalPushAmount": 0.85,
+    "roughnessInfluence": 0.74,
+    "rimLightAmount": 1.28,
+    "specularAmount": 0.44,
+    "lightSweepEnabled": true,
+    "lightSweepDuration": 9,
+    "lightSweepIntensity": 1,
+    "lightSteps": 4.721396244585834,
+    "colorSteps": 19.75908666479416,
+    "aeroTransparency": 0.4820256975700856,
+    "alphaDitherAmount": 0.635839004799469,
+    "alphaPulseAmount": 0.12,
+    "glowAmount": 1.3271128999686501,
+    "internalResolution": "crisp"
+  },
+  "sliderSine": {
+    "depthScale": {
+      "enabled": true,
+      "duration": 32.3
+    },
+    "depthBias": {
+      "enabled": true,
+      "duration": 6
+    },
+    "depthCurve": {
+      "enabled": false,
+      "duration": 6
+    },
+    "sizeNear": {
+      "enabled": true,
+      "duration": 6
+    },
+    "sizeFar": {
+      "enabled": true,
+      "duration": 0.9
+    },
+    "sizeCurve": {
+      "enabled": false,
+      "duration": 6
+    },
+    "sizeJitter": {
+      "enabled": false,
+      "duration": 6
+    },
+    "depthClampMin": {
+      "enabled": false,
+      "duration": 6
+    },
+    "depthClampMax": {
+      "enabled": false,
+      "duration": 6
+    },
+    "maxCubeScreenWidth": {
+      "enabled": false,
+      "duration": 6
+    },
+    "cubeRotation": {
+      "enabled": false,
+      "duration": 6
+    },
+    "density": {
+      "enabled": false,
+      "duration": 6
+    },
+    "edgeBias": {
+      "enabled": false,
+      "duration": 6
+    },
+    "backgroundDensity": {
+      "enabled": false,
+      "duration": 2.5
+    },
+    "spawnThreshold": {
+      "enabled": false,
+      "duration": 0.5
+    },
+    "spawnSoftness": {
+      "enabled": false,
+      "duration": 6
+    },
+    "transitionT": {
+      "enabled": false,
+      "duration": 6
+    },
+    "transitionWarpAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "clusterGridX": {
+      "enabled": false,
+      "duration": 6
+    },
+    "clusterGridY": {
+      "enabled": false,
+      "duration": 6
+    },
+    "clusterSwayAmount": {
+      "enabled": false,
+      "duration": 3.3
+    },
+    "clusterSwaySpeed": {
+      "enabled": false,
+      "duration": 6
+    },
+    "clusterDepthAmount": {
+      "enabled": false,
+      "duration": 3.3
+    },
+    "localJitterAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "skeletonInfluence": {
+      "enabled": false,
+      "duration": 6
+    },
+    "skeletonSwayAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "skeletonSwaySpeed": {
+      "enabled": false,
+      "duration": 6
+    },
+    "skeletonSearchRadius": {
+      "enabled": false,
+      "duration": 6
+    },
+    "neighborTextureRadius": {
+      "enabled": false,
+      "duration": 6
+    },
+    "normalInfluence": {
+      "enabled": false,
+      "duration": 6
+    },
+    "normalPushAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "roughnessInfluence": {
+      "enabled": false,
+      "duration": 6
+    },
+    "rimLightAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "specularAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "lightSweepDuration": {
+      "enabled": false,
+      "duration": 6
+    },
+    "lightSweepIntensity": {
+      "enabled": false,
+      "duration": 6
+    },
+    "lightSteps": {
+      "enabled": false,
+      "duration": 4.1
+    },
+    "colorSteps": {
+      "enabled": false,
+      "duration": 0.5
+    },
+    "aeroTransparency": {
+      "enabled": false,
+      "duration": 4.1
+    },
+    "alphaDitherAmount": {
+      "enabled": true,
+      "duration": 5.7
+    },
+    "alphaPulseAmount": {
+      "enabled": false,
+      "duration": 6
+    },
+    "glowAmount": {
+      "enabled": false,
+      "duration": 0.5
+    }
+  }
+}
