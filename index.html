@@ -3,56 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Elternal World</title>
+    <title>Episode 1 Random Index</title>
     <style>
       html,
       body {
         width: 100%;
         height: 100%;
         margin: 0;
+        background: #fff;
       }
 
       body {
-        display: grid;
-        place-items: center;
-        background: #ffffff;
-        color: #ffffcc;
-        font-family: "Times New Roman", Times, serif;
+        overflow: hidden;
       }
 
-      table {
-        width: min(520px, calc(100vw - 28px));
-        border: 4px ridge #c0c0c0;
-        background: #ffffff;
-      }
-
-      td {
-        padding: 18px;
-        text-align: center;
-      }
-
-      a {
-        color: #ffffff;
-      }
-
-      .blink {
-        animation: blink 0.8s steps(2, start) infinite;
-        color: #ffffff;
-        font-weight: bold;
-      }
-
-      @keyframes blink {
-        50% {
-          visibility: hidden;
-        }
+      .noscript {
+        padding: 16px;
+        color: #111;
+        font: 14px Arial, sans-serif;
       }
     </style>
     <script>
       const destinations = [
-        { label: 'Minihome', url: './minihome/' },
-        { label: 'My Fav Game 2005', url: './myfavgame2005/index.html' },
-        { label: '404 Not Found', url: './404.html' },
-        { label: 'World Loading', url: './world_loading/' }
+        './minihome/',
+        './myfavgame2005/index.html',
+        './404.html',
+        './world_loading/'
       ];
 
       const randomIndex = (() => {
@@ -66,17 +42,21 @@
       })();
 
       window.addEventListener('DOMContentLoaded', () => {
-        const choice = destinations[randomIndex];
-        document.getElementById('destination').textContent = choice.label;
-        window.setTimeout(() => window.location.replace(choice.url), 280);
+        window.location.replace(destinations[randomIndex]);
       });
     </script>
   </head>
   <body>
-    <table>
-      <tr>
-
-      </tr>
-    </table>
+    <noscript>
+      <div class="noscript">
+        <p>JavaScript is required for random launch.</p>
+        <p>
+          <a href="./minihome/">minihome</a>
+          <a href="./myfavgame2005/index.html">myfavgame2005</a>
+          <a href="./404.html">404</a>
+          <a href="./world_loading/">world loading</a>
+        </p>
+      </div>
+    </noscript>
   </body>
 </html>
